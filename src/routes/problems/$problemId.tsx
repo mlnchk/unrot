@@ -46,6 +46,7 @@ import {
 	SidebarProvider,
 	useSidebar,
 } from '@/components/ui/sidebar'
+import { cn } from '@/lib/utils'
 
 type MockChatMessage = {
 	id: string
@@ -141,9 +142,10 @@ const problemNavigation: ProblemNavigationItem[] = [
 
 type ProblemSidebarProps = {
 	activeProblemId: string
+	className?: string
 }
 
-function ProblemSidebar({ activeProblemId }: ProblemSidebarProps) {
+function ProblemSidebar({ activeProblemId, className }: ProblemSidebarProps) {
 	const { open, toggleOpen } = useSidebar()
 
 	const hasMatch = problemNavigation.some(
@@ -152,20 +154,20 @@ function ProblemSidebar({ activeProblemId }: ProblemSidebarProps) {
 	const resolvedActiveId = hasMatch
 		? activeProblemId
 		: (problemNavigation[0]?.id ?? activeProblemId)
-	const _activeProblem = problemNavigation.find(
-		(problem) => problem.id === resolvedActiveId,
-	)
 
 	return (
 		<Sidebar
-			className='hidden min-h-[32rem] flex-shrink-0 rounded-lg border bg-background shadow-sm md:flex'
+			className={cn(
+				'hidden h-full min-h-[32rem] flex-shrink-0 self-stretch rounded-lg border border-border/60 bg-background shadow-md md:flex',
+				className,
+			)}
 			collapsedWidth={64}
 			expandedWidth={312}
 		>
 			<div className='flex h-full flex-1 flex-col'>
 				{open ? (
 					<>
-						<SidebarHeader>
+						<SidebarHeader className='border-border/60 border-b px-4 py-4'>
 							<div className='space-y-0.5'>
 								<p className='font-semibold text-foreground text-sm'>
 									Select a puzzle
@@ -181,7 +183,7 @@ function ProblemSidebar({ activeProblemId }: ProblemSidebarProps) {
 								<ChevronLeft aria-hidden='true' className='size-4' />
 							</Button>
 						</SidebarHeader>
-						<SidebarContent className='space-y-6'>
+						<SidebarContent className='flex flex-1 flex-col gap-3 overflow-y-auto px-4 py-4'>
 							<div>
 								<SidebarGroupContent>
 									<SidebarMenu>
@@ -207,7 +209,7 @@ function ProblemSidebar({ activeProblemId }: ProblemSidebarProps) {
 								</SidebarGroupContent>
 							</div>
 						</SidebarContent>
-						<SidebarFooter>
+						<SidebarFooter className='border-border/60 border-t px-4 py-3'>
 							<Button
 								aria-label='Open user settings'
 								className='flex w-full items-center justify-between px-3 py-2 text-muted-foreground text-sm'
@@ -273,149 +275,146 @@ function ProblemDetailPage() {
 
 	const handlePromptSubmit = useCallback(
 		(_message: PromptInputMessage, _event: FormEvent<HTMLFormElement>) => {
-			// biome-ignore lint/suspicious/noConsole: <explanation>
-			console.info('handlePromptSubmit', _message, _event)
+			// integrate AI request handling here
 		},
 		[],
 	)
 
 	return (
 		<SidebarProvider defaultOpen={false}>
-			<div className='min-h-screen bg-muted/40 py-10'>
-				<div className='mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 md:flex-row'>
+			<div className='min-h-screen w-full bg-muted/30 py-6'>
+				<div className='grid min-h-[calc(100vh-3rem)] w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
 					<ProblemSidebar activeProblemId={activeProblemId} />
-					<div className='flex w-full flex-1 flex-col gap-6 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]'>
-						<section className='flex h-full flex-col border bg-background shadow-sm'>
-							<div className='flex flex-wrap items-start justify-between gap-4 border-b px-6 py-5'>
-								<div>
-									<h1 className='font-semibold text-2xl text-foreground sm:text-3xl'>
-										{mockProblem.title}
-									</h1>
-									<p className='mt-2 text-muted-foreground text-sm sm:text-base'>
-										A mind-bending {mockProblem.category.toLowerCase()} to warm
-										up your neurons.
-									</p>
-								</div>
-								<div className='flex flex-col items-end gap-2 text-right'>
-									<Badge variant='secondary'>{mockProblem.difficulty}</Badge>
-									<Badge variant='outline'>
-										Estimate: {mockProblem.estimatedTime}
-									</Badge>
-								</div>
-							</div>
-							<ScrollArea className='flex-1'>
-								<div className='space-y-8 px-6 py-6'>
-									<div className='space-y-3'>
-										<h2 className='font-semibold text-foreground text-lg'>
-											Problem statement
-										</h2>
-										<div className='space-y-4 text-muted-foreground leading-relaxed'>
-											{mockProblem.description.map((paragraph) => (
-												<p key={paragraph.id}>{paragraph.text}</p>
-											))}
-										</div>
-									</div>
-									<div className='space-y-3'>
-										<h3 className='font-medium text-muted-foreground text-sm uppercase tracking-wide'>
-											Tags
-										</h3>
-										<div className='flex flex-wrap gap-2'>
-											{mockProblem.tags.map((tag) => (
-												<Badge key={tag} variant='outline'>
-													{tag}
-												</Badge>
-											))}
-										</div>
-									</div>
-									<div className='bg-muted/40 px-5 py-4'>
-										<p className='font-medium text-muted-foreground text-sm uppercase'>
-											Hint
-										</p>
-										<p className='mt-2 text-foreground'>{mockProblem.hint}</p>
-									</div>
-									<Collapsible
-										onOpenChange={setIsSolutionOpen}
-										open={isSolutionOpen}
-									>
-										<div className='flex items-center justify-between gap-3 border px-5 py-4'>
-											<div>
-												<p className='font-medium text-foreground'>
-													Solution walkthrough
-												</p>
-												<p className='text-muted-foreground text-sm'>
-													Reveal step-by-step reasoning
-												</p>
-											</div>
-											<CollapsibleTrigger asChild>
-												<Button size='sm' type='button' variant='outline'>
-													{isSolutionOpen ? 'Hide' : 'Reveal'}
-												</Button>
-											</CollapsibleTrigger>
-										</div>
-										<CollapsibleContent className='mt-4 space-y-3 border border-dashed px-5 py-4 text-muted-foreground'>
-											{mockProblem.solution.map((step) => (
-												<p key={step.id}>{step.text}</p>
-											))}
-										</CollapsibleContent>
-									</Collapsible>
-								</div>
-							</ScrollArea>
-						</section>
-
-						<aside className='flex min-h-[32rem] flex-col border bg-background shadow-sm'>
-							<header className='border-b px-6 py-5'>
-								<h2 className='font-semibold text-foreground text-xl'>
-									AI workspace
-								</h2>
-								<p className='mt-1 text-muted-foreground text-sm'>
-									Draft hypotheses, ask clarifying questions, and iterate with
-									your copilot.
+					<section className='flex h-full flex-col rounded-lg border border-border/60 bg-background shadow-md'>
+						<div className='flex flex-wrap items-start justify-between gap-4 border-border/60 border-b px-6 py-5'>
+							<div>
+								<h1 className='font-semibold text-2xl text-foreground sm:text-3xl'>
+									{mockProblem.title}
+								</h1>
+								<p className='mt-2 text-muted-foreground text-sm sm:text-base'>
+									A mind-bending {mockProblem.category.toLowerCase()} to warm up
+									your neurons.
 								</p>
-							</header>
-							<div className='flex flex-1 flex-col'>
-								<Conversation className='flex-1 bg-muted/20'>
-									<ConversationContent className='flex flex-col gap-4'>
-										{mockMessages.map((message) => (
-											<Message from={message.role} key={message.id}>
-												<MessageAvatar
-													name={message.role === 'user' ? 'You' : 'AI'}
-													src='https://avatar.vercel.sh/placeholder'
-												/>
-												<MessageContent>
-													<p>{message.content}</p>
-												</MessageContent>
-											</Message>
-										))}
-									</ConversationContent>
-									<ConversationScrollButton aria-label='Scroll to latest message' />
-								</Conversation>
-								<PromptInput onSubmit={handlePromptSubmit}>
-									<PromptInputBody>
-										<PromptInputTextarea placeholder='Type a follow-up or drop a hint request...' />
-									</PromptInputBody>
-									<PromptInputToolbar>
-										<PromptInputTools>
-											<PromptInputActionMenu>
-												<PromptInputActionMenuTrigger aria-label='Open quick actions' />
-												<PromptInputActionMenuContent>
-													<PromptInputActionMenuItem>
-														Suggest a strategy
-													</PromptInputActionMenuItem>
-													<PromptInputActionMenuItem>
-														Spot a contradiction
-													</PromptInputActionMenuItem>
-													<PromptInputActionMenuItem>
-														Summarize transcripts
-													</PromptInputActionMenuItem>
-												</PromptInputActionMenuContent>
-											</PromptInputActionMenu>
-										</PromptInputTools>
-										<PromptInputSubmit aria-label='Send message' />
-									</PromptInputToolbar>
-								</PromptInput>
 							</div>
-						</aside>
-					</div>
+							<div className='flex flex-col items-end gap-2 text-right'>
+								<Badge variant='secondary'>{mockProblem.difficulty}</Badge>
+								<Badge variant='outline'>
+									Estimate: {mockProblem.estimatedTime}
+								</Badge>
+							</div>
+						</div>
+						<ScrollArea className='flex-1 rounded-b-lg border-border/20 border-t'>
+							<div className='space-y-8 px-6 py-6'>
+								<div className='space-y-3'>
+									<h2 className='font-semibold text-foreground text-lg'>
+										Problem statement
+									</h2>
+									<div className='space-y-4 text-muted-foreground leading-relaxed'>
+										{mockProblem.description.map((paragraph) => (
+											<p key={paragraph.id}>{paragraph.text}</p>
+										))}
+									</div>
+								</div>
+								<div className='space-y-3'>
+									<h3 className='font-medium text-muted-foreground text-sm uppercase tracking-wide'>
+										Tags
+									</h3>
+									<div className='flex flex-wrap gap-2'>
+										{mockProblem.tags.map((tag) => (
+											<Badge key={tag} variant='outline'>
+												{tag}
+											</Badge>
+										))}
+									</div>
+								</div>
+								<div className='bg-muted/40 px-5 py-4'>
+									<p className='font-medium text-muted-foreground text-sm uppercase'>
+										Hint
+									</p>
+									<p className='mt-2 text-foreground'>{mockProblem.hint}</p>
+								</div>
+								<Collapsible
+									onOpenChange={setIsSolutionOpen}
+									open={isSolutionOpen}
+								>
+									<div className='flex items-center justify-between gap-3 border px-5 py-4'>
+										<div>
+											<p className='font-medium text-foreground'>
+												Solution walkthrough
+											</p>
+											<p className='text-muted-foreground text-sm'>
+												Reveal step-by-step reasoning
+											</p>
+										</div>
+										<CollapsibleTrigger asChild>
+											<Button size='sm' type='button' variant='outline'>
+												{isSolutionOpen ? 'Hide' : 'Reveal'}
+											</Button>
+										</CollapsibleTrigger>
+									</div>
+									<CollapsibleContent className='mt-4 space-y-3 border border-dashed px-5 py-4 text-muted-foreground'>
+										{mockProblem.solution.map((step) => (
+											<p key={step.id}>{step.text}</p>
+										))}
+									</CollapsibleContent>
+								</Collapsible>
+							</div>
+						</ScrollArea>
+					</section>
+
+					<aside className='flex min-h-[32rem] flex-col rounded-lg border border-border/60 bg-background shadow-md'>
+						<header className='border-border/60 border-b px-6 py-5'>
+							<h2 className='font-semibold text-foreground text-xl'>
+								AI workspace
+							</h2>
+							<p className='mt-1 text-muted-foreground text-sm'>
+								Draft hypotheses, ask clarifying questions, and iterate with
+								your copilot.
+							</p>
+						</header>
+						<div className='flex flex-1 flex-col'>
+							<Conversation className='flex-1 bg-muted/20'>
+								<ConversationContent className='flex flex-col gap-4'>
+									{mockMessages.map((message) => (
+										<Message from={message.role} key={message.id}>
+											<MessageAvatar
+												name={message.role === 'user' ? 'You' : 'AI'}
+												src='https://avatar.vercel.sh/placeholder'
+											/>
+											<MessageContent>
+												<p>{message.content}</p>
+											</MessageContent>
+										</Message>
+									))}
+								</ConversationContent>
+								<ConversationScrollButton aria-label='Scroll to latest message' />
+							</Conversation>
+							<PromptInput onSubmit={handlePromptSubmit}>
+								<PromptInputBody>
+									<PromptInputTextarea placeholder='Type a follow-up or drop a hint request...' />
+								</PromptInputBody>
+								<PromptInputToolbar>
+									<PromptInputTools>
+										<PromptInputActionMenu>
+											<PromptInputActionMenuTrigger aria-label='Open quick actions' />
+											<PromptInputActionMenuContent>
+												<PromptInputActionMenuItem>
+													Suggest a strategy
+												</PromptInputActionMenuItem>
+												<PromptInputActionMenuItem>
+													Spot a contradiction
+												</PromptInputActionMenuItem>
+												<PromptInputActionMenuItem>
+													Summarize transcripts
+												</PromptInputActionMenuItem>
+											</PromptInputActionMenuContent>
+										</PromptInputActionMenu>
+									</PromptInputTools>
+									<PromptInputSubmit aria-label='Send message' />
+								</PromptInputToolbar>
+							</PromptInput>
+						</div>
+					</aside>
 				</div>
 			</div>
 		</SidebarProvider>
