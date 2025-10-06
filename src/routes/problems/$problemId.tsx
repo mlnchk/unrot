@@ -117,7 +117,7 @@ function ProblemDetailPage() {
 	return (
 		<div className='min-h-screen bg-muted/40 py-10'>
 			<div className='mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]'>
-				<section className='flex h-full flex-col rounded-3xl border bg-background shadow-sm'>
+				<section className='flex h-full flex-col border bg-background shadow-sm'>
 					<div className='flex flex-wrap items-start justify-between gap-4 border-b px-6 py-5'>
 						<div>
 							<h1 className='font-semibold text-2xl text-foreground sm:text-3xl'>
@@ -159,7 +159,7 @@ function ProblemDetailPage() {
 									))}
 								</div>
 							</div>
-							<div className='rounded-2xl bg-muted/40 px-5 py-4'>
+							<div className='bg-muted/40 px-5 py-4'>
 								<p className='font-medium text-muted-foreground text-sm uppercase'>
 									Hint
 								</p>
@@ -169,7 +169,7 @@ function ProblemDetailPage() {
 								onOpenChange={setIsSolutionOpen}
 								open={isSolutionOpen}
 							>
-								<div className='flex items-center justify-between gap-3 rounded-2xl border px-5 py-4'>
+								<div className='flex items-center justify-between gap-3 border px-5 py-4'>
 									<div>
 										<p className='font-medium text-foreground'>
 											Solution walkthrough
@@ -184,7 +184,7 @@ function ProblemDetailPage() {
 										</Button>
 									</CollapsibleTrigger>
 								</div>
-								<CollapsibleContent className='mt-4 space-y-3 rounded-2xl border border-dashed px-5 py-4 text-muted-foreground'>
+								<CollapsibleContent className='mt-4 space-y-3 border border-dashed px-5 py-4 text-muted-foreground'>
 									{mockProblem.solution.map((step) => (
 										<p key={step.id}>{step.text}</p>
 									))}
@@ -194,7 +194,7 @@ function ProblemDetailPage() {
 					</ScrollArea>
 				</section>
 
-				<aside className='flex min-h-[32rem] flex-col rounded-3xl border bg-background shadow-sm'>
+				<aside className='flex min-h-[32rem] flex-col border bg-background shadow-sm'>
 					<header className='border-b px-6 py-5'>
 						<h2 className='font-semibold text-foreground text-xl'>
 							AI workspace
@@ -204,8 +204,8 @@ function ProblemDetailPage() {
 							copilot.
 						</p>
 					</header>
-					<div className='flex flex-1 flex-col gap-4 p-4'>
-						<Conversation className='flex-1 rounded-2xl border bg-muted/20'>
+					<div className='flex flex-1 flex-col'>
+						<Conversation className='flex-1 bg-muted/20'>
 							<ConversationContent className='flex flex-col gap-4'>
 								{mockMessages.map((message) => (
 									<Message from={message.role} key={message.id}>
