@@ -35,6 +35,15 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off"
+      },
+      "performance": {
+        "noNamespaceImport": "off"
+      },
+      "style": {
+        "noMagicNumbers": "off"
+      },
+      "a11y": {
+        "useSemanticElements": "off"
       }
     }
   },

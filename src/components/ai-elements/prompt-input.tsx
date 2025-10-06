@@ -337,6 +337,7 @@ export const PromptInput = ({
 	useEffect(() => {
 		if (syncHiddenInput && inputRef.current) {
 			// Clear the input when items are cleared
+			// biome-ignore lint/style/useCollapsedIf: <explanation>
 			if (items.length === 0) {
 				inputRef.current.value = ''
 			}
@@ -421,7 +422,7 @@ export const PromptInput = ({
 		// Convert blob URLs to data URLs asynchronously
 		Promise.all(
 			items.map(async ({ id, ...item }) => {
-				if (item.url && item.url.startsWith('blob:')) {
+				if (item.url?.startsWith('blob:')) {
 					return {
 						...item,
 						url: await convertBlobUrlToDataUrl(item.url),

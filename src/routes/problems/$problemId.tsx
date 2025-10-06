@@ -152,7 +152,7 @@ function ProblemSidebar({ activeProblemId }: ProblemSidebarProps) {
 	const resolvedActiveId = hasMatch
 		? activeProblemId
 		: (problemNavigation[0]?.id ?? activeProblemId)
-	const activeProblem = problemNavigation.find(
+	const _activeProblem = problemNavigation.find(
 		(problem) => problem.id === resolvedActiveId,
 	)
 
@@ -272,7 +272,10 @@ function ProblemDetailPage() {
 		problemId ?? problemNavigation[0]?.id ?? 'labyrinth-cipher'
 
 	const handlePromptSubmit = useCallback(
-		(_message: PromptInputMessage, _event: FormEvent<HTMLFormElement>) => {},
+		(_message: PromptInputMessage, _event: FormEvent<HTMLFormElement>) => {
+			// biome-ignore lint/suspicious/noConsole: <explanation>
+			console.info('handlePromptSubmit', _message, _event)
+		},
 		[],
 	)
 
