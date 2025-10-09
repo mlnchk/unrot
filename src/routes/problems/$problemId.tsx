@@ -310,9 +310,6 @@ function ProblemDetailPage() {
 						<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
 							<div className='space-y-8 px-6 py-6'>
 								<div className='space-y-3'>
-									<h2 className='font-semibold text-foreground text-lg'>
-										Problem statement
-									</h2>
 									<div className='prose prose-sm text-muted-foreground leading-relaxed'>
 										<Markdown>{problem.content}</Markdown>
 									</div>
