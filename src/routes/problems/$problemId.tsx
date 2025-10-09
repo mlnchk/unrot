@@ -1,14 +1,21 @@
-'use client'
-
+import { google } from '@ai-sdk/google'
+import { useChat } from '@ai-sdk/react'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+	convertToModelMessages,
+	DefaultChatTransport,
+	streamText,
+	validateUIMessages,
+} from 'ai'
 import { ChevronLeft, PanelRightOpen, Settings } from 'lucide-react'
-import { type FormEvent, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Markdown from 'react-markdown'
 import {
 	Conversation,
 	ConversationContent,
 	ConversationScrollButton,
 } from '@/components/ai-elements/conversation'
+import { Loader } from '@/components/ai-elements/loader'
 import {
 	Message,
 	MessageAvatar,
@@ -27,6 +34,7 @@ import {
 	PromptInputToolbar,
 	PromptInputTools,
 } from '@/components/ai-elements/prompt-input'
+import { Response } from '@/components/ai-elements/response'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -57,37 +65,6 @@ import type {
 	ProblemSolution,
 } from '@/lib/types/problem'
 import { cn } from '@/lib/utils'
-
-type MockChatMessage = {
-	id: string
-	role: 'user' | 'assistant'
-	content: string
-}
-
-const mockMessages: MockChatMessage[] = [
-	{
-		id: '1',
-		role: 'user',
-		content: 'Is it even possible to solve this puzzle on a timer?',
-	},
-	{
-		id: '2',
-		role: 'assistant',
-		content:
-			'Absolutely. The cadence hint narrows the space dramatically - focus on how the fragments mirror each other.',
-	},
-	{
-		id: '3',
-		role: 'user',
-		content: 'Do I need any extra data beyond the journal notes?',
-	},
-	{
-		id: '4',
-		role: 'assistant',
-		content:
-			'No additional data required. Try grouping the fragments by the silent letters the journal mentions.',
-	},
-]
 
 type ProblemSidebarProps = {
 	activeProblemId: string
@@ -217,6 +194,23 @@ function CollapsedSidebarRail({ onExpand }: CollapsedSidebarRailProps) {
 
 export const Route = createFileRoute('/problems/$problemId')({
 	component: ProblemDetailPage,
+	server: {
+		handlers: {
+			POST: async ({ request }) => {
+				const body = await request.json()
+
+				const uiMessages = await validateUIMessages({ messages: body.messages })
+				const modelMessages = convertToModelMessages(uiMessages)
+
+				const result = streamText({
+					model: google('gemini-2.5-flash-lite'),
+					messages: modelMessages,
+				})
+
+				return result.toUIMessageStreamResponse()
+			},
+		},
+	},
 })
 
 function ProblemDetailPage() {
@@ -226,6 +220,14 @@ function ProblemDetailPage() {
 	const [problem, setProblem] = useState<Problem | null>(null)
 	const [solution, setSolution] = useState<ProblemSolution | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
+	const [input, setInput] = useState('')
+
+	const { status, messages, sendMessage } = useChat({
+		transport: new DefaultChatTransport({
+			// FIXME: replace with Route.url or something
+			api: `/problems/${problemId}`,
+		}),
+	})
 
 	// Load all problems for navigation
 	useEffect(() => {
@@ -256,7 +258,16 @@ function ProblemDetailPage() {
 	}, [problemId, problems])
 
 	const handlePromptSubmit = useCallback(
-		(_message: PromptInputMessage, _event: FormEvent<HTMLFormElement>) => {
+		(message: PromptInputMessage) => {
+			const { text } = message
+
+			if (!text) {
+				return
+			}
+
+			sendMessage({ text })
+			setInput('')
+
 			// Future AI integration point
 			// When implementing AI chat:
 			// 1. Import buildProblemContext from '@/lib/ai-context'
@@ -367,23 +378,42 @@ function ProblemDetailPage() {
 						<div className='flex flex-1 flex-col overflow-y-auto'>
 							<Conversation className='flex-1 bg-muted/20'>
 								<ConversationContent className='flex flex-col gap-4'>
-									{mockMessages.map((message) => (
-										<Message from={message.role} key={message.id}>
+									{messages.map(({ id, role, parts }) => (
+										<Message from={role} key={id}>
 											<MessageAvatar
-												name={message.role === 'user' ? 'You' : 'AI'}
+												name={role === 'user' ? 'You' : 'AI'}
 												src='https://avatar.vercel.sh/placeholder'
 											/>
 											<MessageContent>
-												<p>{message.content}</p>
+												{parts.map((part, i) => {
+													switch (part.type) {
+														case 'text':
+															return (
+																<Response
+																	// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+																	key={`${role}-${i}`}
+																>
+																	{part.text}
+																</Response>
+															)
+														default:
+															return null
+													}
+												})}
 											</MessageContent>
 										</Message>
 									))}
+									{status === 'submitted' && <Loader />}
 								</ConversationContent>
 								<ConversationScrollButton aria-label='Scroll to latest message' />
 							</Conversation>
 							<PromptInput onSubmit={handlePromptSubmit}>
 								<PromptInputBody>
-									<PromptInputTextarea placeholder='Type a follow-up or drop a hint request...' />
+									<PromptInputTextarea
+										onChange={(e) => setInput(e.target.value)}
+										placeholder='Type a follow-up or drop a hint request...'
+										value={input}
+									/>
 								</PromptInputBody>
 								<PromptInputToolbar>
 									<PromptInputTools>
