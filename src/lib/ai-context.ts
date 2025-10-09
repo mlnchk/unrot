@@ -7,8 +7,8 @@ type ProblemContext = {
 		category: string
 		difficulty: string
 		estimatedTime: string
-		tags: string[]
 		hint: string
+		source?: string
 		content: string
 		solution?: string
 	}
@@ -75,8 +75,8 @@ Guidelines:
 			category: metadata.category,
 			difficulty: metadata.difficulty,
 			estimatedTime: metadata.estimatedTime,
-			tags: metadata.tags,
 			hint: metadata.hint,
+			source: metadata.source,
 			content,
 			solution: solution?.content,
 		},

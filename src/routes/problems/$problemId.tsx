@@ -318,18 +318,6 @@ function ProblemDetailPage() {
 										<Markdown>{problem.content}</Markdown>
 									</div>
 								</div>
-								<div className='space-y-3'>
-									<h3 className='font-medium text-muted-foreground text-sm uppercase tracking-wide'>
-										Tags
-									</h3>
-									<div className='flex flex-wrap gap-2'>
-										{problem.metadata.tags.map((tag) => (
-											<Badge key={tag} variant='outline'>
-												{tag}
-											</Badge>
-										))}
-									</div>
-								</div>
 								<div className='bg-muted/40 px-5 py-4'>
 									<p className='font-medium text-muted-foreground text-sm uppercase'>
 										Hint

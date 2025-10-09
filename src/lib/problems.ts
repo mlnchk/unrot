@@ -114,8 +114,8 @@ export async function getProblemBySlug(slug: string): Promise<Problem | null> {
 			category: (metadata.category as string) ?? '',
 			difficulty: (metadata.difficulty as string) ?? '',
 			estimatedTime: (metadata.estimatedTime as string) ?? '',
-			tags: (metadata.tags as string[]) ?? [],
 			hint: (metadata.hint as string) ?? '',
+			source: (metadata.source as string) ?? undefined,
 		},
 		content,
 	}

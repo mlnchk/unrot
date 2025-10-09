@@ -3,8 +3,8 @@ export type ProblemMetadata = {
 	category: string
 	difficulty: string
 	estimatedTime: string
-	tags: string[]
 	hint: string
+	source?: string
 }
 
 export type ProblemListItem = {
