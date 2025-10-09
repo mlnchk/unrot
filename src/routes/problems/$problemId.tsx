@@ -34,7 +34,7 @@ import {
 	PromptInputToolbar,
 	PromptInputTools,
 } from '@/components/ai-elements/prompt-input'
-import { Response } from '@/components/ai-elements/response'
+import { Response as UIResponse } from '@/components/ai-elements/response'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -54,6 +54,7 @@ import {
 	SidebarProvider,
 	useSidebar,
 } from '@/components/ui/sidebar'
+import { buildProblemContext } from '@/lib/ai'
 import {
 	getAllProblems,
 	getProblemBySlug,
@@ -196,15 +197,28 @@ export const Route = createFileRoute('/problems/$problemId')({
 	component: ProblemDetailPage,
 	server: {
 		handlers: {
-			POST: async ({ request }) => {
+			POST: async ({ request, params }) => {
 				const body = await request.json()
+
+				const { problemId } = params
+				const [problem, solution] = await Promise.all([
+					getProblemBySlug(problemId),
+					getSolutionBySlug(problemId),
+				])
+
+				if (!(problem && solution)) {
+					return Response.json({ error: 'Problem not found' }, { status: 404 })
+				}
 
 				const uiMessages = await validateUIMessages({ messages: body.messages })
 				const modelMessages = convertToModelMessages(uiMessages)
 
+				const context = buildProblemContext(problem, solution)
+
 				const result = streamText({
 					model: google('gemini-2.5-flash-lite'),
 					messages: modelMessages,
+					system: context.systemPrompt,
 				})
 
 				return result.toUIMessageStreamResponse()
@@ -389,12 +403,12 @@ function ProblemDetailPage() {
 													switch (part.type) {
 														case 'text':
 															return (
-																<Response
+																<UIResponse
 																	// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 																	key={`${role}-${i}`}
 																>
 																	{part.text}
-																</Response>
+																</UIResponse>
 															)
 														default:
 															return null
