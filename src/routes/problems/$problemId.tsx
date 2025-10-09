@@ -273,8 +273,8 @@ function ProblemDetailPage() {
 	if (isLoading || !problem) {
 		return (
 			<SidebarProvider defaultOpen={false}>
-				<div className='min-h-screen w-full bg-muted/30 py-6'>
-					<div className='flex min-h-[calc(100vh-3rem)] items-center justify-center'>
+				<div className='h-screen w-full bg-muted/30 py-6'>
+					<div className='flex h-full items-center justify-center'>
 						<p className='text-muted-foreground'>Loading problem...</p>
 					</div>
 				</div>
@@ -284,13 +284,13 @@ function ProblemDetailPage() {
 
 	return (
 		<SidebarProvider defaultOpen={false}>
-			<div className='min-h-screen w-full bg-muted/30 py-6'>
-				<div className='grid min-h-[calc(100vh-3rem)] w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
+			<div className='h-screen w-full bg-muted/30 py-6'>
+				<div className='grid h-full w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
 					<ProblemSidebar
 						activeProblemId={activeProblemId}
 						problems={problems}
 					/>
-					<section className='flex h-full flex-col rounded-lg border border-border/60 bg-background shadow-md'>
+					<section className='flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md'>
 						<div className='flex flex-wrap items-start justify-between gap-4 border-border/60 border-b px-6 py-5'>
 							<div>
 								<h1 className='font-semibold text-2xl text-foreground sm:text-3xl'>
@@ -308,7 +308,7 @@ function ProblemDetailPage() {
 								</Badge>
 							</div>
 						</div>
-						<ScrollArea className='flex-1 rounded-b-lg border-border/20 border-t'>
+						<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
 							<div className='space-y-8 px-6 py-6'>
 								<div className='space-y-3'>
 									<h2 className='font-semibold text-foreground text-lg'>
@@ -352,7 +352,7 @@ function ProblemDetailPage() {
 									</Collapsible>
 								)}
 							</div>
-						</ScrollArea>
+						</div>
 					</section>
 
 					<aside className='flex min-h-[32rem] flex-col rounded-lg border border-border/60 bg-background shadow-md'>
@@ -365,7 +365,7 @@ function ProblemDetailPage() {
 								your copilot.
 							</p>
 						</header>
-						<div className='flex flex-1 flex-col'>
+						<div className='flex flex-1 flex-col overflow-y-auto'>
 							<Conversation className='flex-1 bg-muted/20'>
 								<ConversationContent className='flex flex-col gap-4'>
 									{mockMessages.map((message) => (
