@@ -2,7 +2,8 @@
 
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ChevronLeft, PanelRightOpen, Settings } from 'lucide-react'
-import { type FormEvent, useCallback, useState } from 'react'
+import { type FormEvent, useCallback, useEffect, useState } from 'react'
+import Markdown from 'react-markdown'
 import {
 	Conversation,
 	ConversationContent,
@@ -46,49 +47,22 @@ import {
 	SidebarProvider,
 	useSidebar,
 } from '@/components/ui/sidebar'
+import {
+	getAllProblems,
+	getProblemBySlug,
+	getSolutionBySlug,
+} from '@/lib/problems'
+import type {
+	Problem,
+	ProblemListItem,
+	ProblemSolution,
+} from '@/lib/types/problem'
 import { cn } from '@/lib/utils'
 
 type MockChatMessage = {
 	id: string
 	role: 'user' | 'assistant'
 	content: string
-}
-
-const mockProblem = {
-	title: 'Labyrinth Cipher',
-	category: 'Logic Puzzle',
-	difficulty: 'Challenging',
-	estimatedTime: '15 minutes',
-	tags: ['Pattern recognition', 'Deduction', 'Word play'],
-	description: [
-		{
-			id: 'labyrinth-overview',
-			text: 'An eccentric architect has hidden a treasure deep within a modular labyrinth. Each chamber in the maze is labeled with a fragment of a quotation. The fragments shift position every minute following a predictable but puzzling cadence.',
-		},
-		{
-			id: 'vault-requirements',
-			text: 'To unlock the vault, you must determine the original quotation, the author, and the order in which the chambers must be visited. Every wrong attempt causes the maze to reconfigure, making brute force attempts futile.',
-		},
-		{
-			id: 'journal-notes',
-			text: 'Fortunately, the architect left behind a cryptic field journal with notes on symmetry, prime intervals, and a curious reference to "listening for silent letters."',
-		},
-	],
-	hint: 'Look for alternating palindromes across the chamber numbers before decoding the letters.',
-	solution: [
-		{
-			id: 'solution-mapping',
-			text: 'Start by mapping the chamber numbers to prime indices. The palindromic structure reveals that every second fragment should be read in reverse.',
-		},
-		{
-			id: 'solution-quote',
-			text: 'Concatenating the adjusted fragments yields the quote "Silence is a true friend who never betrays" by Confucius. The correct path spells the word FRIEND, guiding the traversal order.',
-		},
-		{
-			id: 'solution-path',
-			text: 'Entering the chambers in the FRIEND sequence disengages the vault lock without triggering a rearrangement.',
-		},
-	],
 }
 
 const mockMessages: MockChatMessage[] = [
@@ -116,44 +90,23 @@ const mockMessages: MockChatMessage[] = [
 	},
 ]
 
-type ProblemNavigationItem = {
-	id: string
-	title: string
-}
-
-const problemNavigation: ProblemNavigationItem[] = [
-	{
-		id: 'labyrinth-cipher',
-		title: 'Labyrinth Cipher',
-	},
-	{
-		id: 'aurora-lock',
-		title: 'Aurora Lock',
-	},
-	{
-		id: 'glyph-garden',
-		title: 'Glyph Garden',
-	},
-	{
-		id: 'echo-bridge',
-		title: 'Echo Bridge',
-	},
-]
-
 type ProblemSidebarProps = {
 	activeProblemId: string
+	problems: ProblemListItem[]
 	className?: string
 }
 
-function ProblemSidebar({ activeProblemId, className }: ProblemSidebarProps) {
+function ProblemSidebar({
+	activeProblemId,
+	problems,
+	className,
+}: ProblemSidebarProps) {
 	const { open, toggleOpen } = useSidebar()
 
-	const hasMatch = problemNavigation.some(
-		(problem) => problem.id === activeProblemId,
-	)
+	const hasMatch = problems.some((problem) => problem.slug === activeProblemId)
 	const resolvedActiveId = hasMatch
 		? activeProblemId
-		: (problemNavigation[0]?.id ?? activeProblemId)
+		: (problems[0]?.slug ?? activeProblemId)
 
 	return (
 		<Sidebar
@@ -187,14 +140,14 @@ function ProblemSidebar({ activeProblemId, className }: ProblemSidebarProps) {
 							<div>
 								<SidebarGroupContent>
 									<SidebarMenu>
-										{problemNavigation.map((problem) => {
-											const isActive = problem.id === resolvedActiveId
+										{problems.map((problem) => {
+											const isActive = problem.slug === resolvedActiveId
 											return (
-												<SidebarMenuItem key={problem.id}>
+												<SidebarMenuItem key={problem.slug}>
 													<SidebarMenuButton asChild isActive={isActive}>
 														<Link
 															className='flex w-full items-center justify-between gap-3'
-															params={{ problemId: problem.id }}
+															params={{ problemId: problem.slug }}
 															to='/problems/$problemId'
 														>
 															<span className='font-medium text-foreground text-sm'>
@@ -270,36 +223,88 @@ export const Route = createFileRoute('/problems/$problemId')({
 function ProblemDetailPage() {
 	const { problemId } = Route.useParams()
 	const [isSolutionOpen, setIsSolutionOpen] = useState(false)
-	const activeProblemId =
-		problemId ?? problemNavigation[0]?.id ?? 'labyrinth-cipher'
+	const [problems, setProblems] = useState<ProblemListItem[]>([])
+	const [problem, setProblem] = useState<Problem | null>(null)
+	const [solution, setSolution] = useState<ProblemSolution | null>(null)
+	const [isLoading, setIsLoading] = useState(true)
+
+	// Load all problems for navigation
+	useEffect(() => {
+		getAllProblems().then((loadedProblems) => {
+			setProblems(loadedProblems)
+		})
+	}, [])
+
+	// Load current problem and solution
+	useEffect(() => {
+		const loadProblem = async () => {
+			setIsLoading(true)
+			const slug = problemId ?? problems[0]?.slug ?? 'labyrinth-cipher'
+
+			const [loadedProblem, loadedSolution] = await Promise.all([
+				getProblemBySlug(slug),
+				getSolutionBySlug(slug),
+			])
+
+			setProblem(loadedProblem)
+			setSolution(loadedSolution)
+			setIsLoading(false)
+		}
+
+		if (problemId || problems.length > 0) {
+			loadProblem()
+		}
+	}, [problemId, problems])
 
 	const handlePromptSubmit = useCallback(
 		(_message: PromptInputMessage, _event: FormEvent<HTMLFormElement>) => {
-			// integrate AI request handling here
+			// Future AI integration point
+			// When implementing AI chat:
+			// 1. Import buildProblemContext from '@/lib/ai-context'
+			// 2. Use it to prepare the problem context:
+			//    const context = buildProblemContext(problem, solution);
+			// 3. Pass context.systemPrompt and context.problemData to AI SDK
 		},
-		[],
+		[problem, solution],
 	)
+
+	const activeProblemId = problemId ?? problems[0]?.slug ?? 'labyrinth-cipher'
+
+	if (isLoading || !problem) {
+		return (
+			<SidebarProvider defaultOpen={false}>
+				<div className='min-h-screen w-full bg-muted/30 py-6'>
+					<div className='flex min-h-[calc(100vh-3rem)] items-center justify-center'>
+						<p className='text-muted-foreground'>Loading problem...</p>
+					</div>
+				</div>
+			</SidebarProvider>
+		)
+	}
 
 	return (
 		<SidebarProvider defaultOpen={false}>
 			<div className='min-h-screen w-full bg-muted/30 py-6'>
 				<div className='grid min-h-[calc(100vh-3rem)] w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
-					<ProblemSidebar activeProblemId={activeProblemId} />
+					<ProblemSidebar
+						activeProblemId={activeProblemId}
+						problems={problems}
+					/>
 					<section className='flex h-full flex-col rounded-lg border border-border/60 bg-background shadow-md'>
 						<div className='flex flex-wrap items-start justify-between gap-4 border-border/60 border-b px-6 py-5'>
 							<div>
 								<h1 className='font-semibold text-2xl text-foreground sm:text-3xl'>
-									{mockProblem.title}
+									{problem.metadata.title}
 								</h1>
 								<p className='mt-2 text-muted-foreground text-sm sm:text-base'>
-									A mind-bending {mockProblem.category.toLowerCase()} to warm up
-									your neurons.
+									A mind-bending {problem.metadata.category.toLowerCase()} to
+									warm up your neurons.
 								</p>
 							</div>
 							<div className='flex flex-col items-end gap-2 text-right'>
-								<Badge variant='secondary'>{mockProblem.difficulty}</Badge>
+								<Badge variant='secondary'>{problem.metadata.difficulty}</Badge>
 								<Badge variant='outline'>
-									Estimate: {mockProblem.estimatedTime}
+									Estimate: {problem.metadata.estimatedTime}
 								</Badge>
 							</div>
 						</div>
@@ -309,10 +314,8 @@ function ProblemDetailPage() {
 									<h2 className='font-semibold text-foreground text-lg'>
 										Problem statement
 									</h2>
-									<div className='space-y-4 text-muted-foreground leading-relaxed'>
-										{mockProblem.description.map((paragraph) => (
-											<p key={paragraph.id}>{paragraph.text}</p>
-										))}
+									<div className='prose prose-sm text-muted-foreground leading-relaxed'>
+										<Markdown>{problem.content}</Markdown>
 									</div>
 								</div>
 								<div className='space-y-3'>
@@ -320,7 +323,7 @@ function ProblemDetailPage() {
 										Tags
 									</h3>
 									<div className='flex flex-wrap gap-2'>
-										{mockProblem.tags.map((tag) => (
+										{problem.metadata.tags.map((tag) => (
 											<Badge key={tag} variant='outline'>
 												{tag}
 											</Badge>
@@ -331,33 +334,35 @@ function ProblemDetailPage() {
 									<p className='font-medium text-muted-foreground text-sm uppercase'>
 										Hint
 									</p>
-									<p className='mt-2 text-foreground'>{mockProblem.hint}</p>
+									<p className='mt-2 text-foreground'>
+										{problem.metadata.hint}
+									</p>
 								</div>
-								<Collapsible
-									onOpenChange={setIsSolutionOpen}
-									open={isSolutionOpen}
-								>
-									<div className='flex items-center justify-between gap-3 border px-5 py-4'>
-										<div>
-											<p className='font-medium text-foreground'>
-												Solution walkthrough
-											</p>
-											<p className='text-muted-foreground text-sm'>
-												Reveal step-by-step reasoning
-											</p>
+								{solution && (
+									<Collapsible
+										onOpenChange={setIsSolutionOpen}
+										open={isSolutionOpen}
+									>
+										<div className='flex items-center justify-between gap-3 border px-5 py-4'>
+											<div>
+												<p className='font-medium text-foreground'>
+													Solution walkthrough
+												</p>
+												<p className='text-muted-foreground text-sm'>
+													Reveal step-by-step reasoning
+												</p>
+											</div>
+											<CollapsibleTrigger asChild>
+												<Button size='sm' type='button' variant='outline'>
+													{isSolutionOpen ? 'Hide' : 'Reveal'}
+												</Button>
+											</CollapsibleTrigger>
 										</div>
-										<CollapsibleTrigger asChild>
-											<Button size='sm' type='button' variant='outline'>
-												{isSolutionOpen ? 'Hide' : 'Reveal'}
-											</Button>
-										</CollapsibleTrigger>
-									</div>
-									<CollapsibleContent className='mt-4 space-y-3 border border-dashed px-5 py-4 text-muted-foreground'>
-										{mockProblem.solution.map((step) => (
-											<p key={step.id}>{step.text}</p>
-										))}
-									</CollapsibleContent>
-								</Collapsible>
+										<CollapsibleContent className='prose prose-sm mt-4 border border-dashed px-5 py-4 text-muted-foreground'>
+											<Markdown>{solution.content}</Markdown>
+										</CollapsibleContent>
+									</Collapsible>
+								)}
 							</div>
 						</ScrollArea>
 					</section>
