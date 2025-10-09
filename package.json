@@ -41,6 +41,7 @@
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.6.0",
     "highlight.js": "^11.11.1",
+    "localforage": "^1.10.0",
     "lucide-react": "^0.544.0",
     "nanoid": "^5.1.6",
     "react": "^19.0.0",

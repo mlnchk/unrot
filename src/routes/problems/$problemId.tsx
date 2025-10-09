@@ -1,45 +1,16 @@
 import { google } from '@ai-sdk/google'
-import { useChat } from '@ai-sdk/react'
 import {
+	ClientOnly,
 	createFileRoute,
 	Link,
 	notFound,
-	useLocation,
 } from '@tanstack/react-router'
-import {
-	convertToModelMessages,
-	DefaultChatTransport,
-	streamText,
-	validateUIMessages,
-} from 'ai'
+import { convertToModelMessages, streamText, validateUIMessages } from 'ai'
 import { ChevronLeft, PanelRightOpen, Settings } from 'lucide-react'
-import { useCallback, useState } from 'react'
+import { Suspense, useState } from 'react'
 import Markdown from 'react-markdown'
-import {
-	Conversation,
-	ConversationContent,
-	ConversationScrollButton,
-} from '@/components/ai-elements/conversation'
 import { Loader } from '@/components/ai-elements/loader'
-import {
-	Message,
-	MessageAvatar,
-	MessageContent,
-} from '@/components/ai-elements/message'
-import {
-	PromptInput,
-	PromptInputActionMenu,
-	PromptInputActionMenuContent,
-	PromptInputActionMenuItem,
-	PromptInputActionMenuTrigger,
-	PromptInputBody,
-	type PromptInputMessage,
-	PromptInputSubmit,
-	PromptInputTextarea,
-	PromptInputToolbar,
-	PromptInputTools,
-} from '@/components/ai-elements/prompt-input'
-import { Response as UIResponse } from '@/components/ai-elements/response'
+import { Chat } from '@/components/chat'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -240,28 +211,6 @@ function ProblemDetailPage() {
 	const { problemId } = Route.useParams()
 	const { problem, solution } = Route.useLoaderData()
 	const [isSolutionOpen, setIsSolutionOpen] = useState(false)
-	const [input, setInput] = useState('')
-
-	const pathname = useLocation({ select: (location) => location.pathname })
-	const { status, messages, sendMessage } = useChat({
-		transport: new DefaultChatTransport({
-			api: pathname,
-		}),
-	})
-
-	const handlePromptSubmit = useCallback(
-		(message: PromptInputMessage) => {
-			const { text } = message
-
-			if (!text) {
-				return
-			}
-
-			sendMessage({ text })
-			setInput('')
-		},
-		[sendMessage],
-	)
 
 	return (
 		<SidebarProvider defaultOpen={false}>
@@ -340,67 +289,18 @@ function ProblemDetailPage() {
 								your copilot.
 							</p>
 						</header>
-						<div className='flex flex-1 flex-col overflow-y-auto'>
-							<Conversation className='flex-1 bg-muted/20'>
-								<ConversationContent className='flex flex-col gap-4'>
-									{messages.map(({ id, role, parts }) => (
-										<Message from={role} key={id}>
-											<MessageAvatar
-												name={role === 'user' ? 'You' : 'AI'}
-												src='https://avatar.vercel.sh/placeholder'
-											/>
-											<MessageContent>
-												{parts.map((part, i) => {
-													switch (part.type) {
-														case 'text':
-															return (
-																<UIResponse
-																	// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-																	key={`${role}-${i}`}
-																>
-																	{part.text}
-																</UIResponse>
-															)
-														default:
-															return null
-													}
-												})}
-											</MessageContent>
-										</Message>
-									))}
-									{status === 'submitted' && <Loader />}
-								</ConversationContent>
-								<ConversationScrollButton aria-label='Scroll to latest message' />
-							</Conversation>
-							<PromptInput onSubmit={handlePromptSubmit}>
-								<PromptInputBody>
-									<PromptInputTextarea
-										onChange={(e) => setInput(e.target.value)}
-										placeholder='Type a follow-up or drop a hint request...'
-										value={input}
-									/>
-								</PromptInputBody>
-								<PromptInputToolbar>
-									<PromptInputTools>
-										<PromptInputActionMenu>
-											<PromptInputActionMenuTrigger aria-label='Open quick actions' />
-											<PromptInputActionMenuContent>
-												<PromptInputActionMenuItem>
-													Suggest a strategy
-												</PromptInputActionMenuItem>
-												<PromptInputActionMenuItem>
-													Spot a contradiction
-												</PromptInputActionMenuItem>
-												<PromptInputActionMenuItem>
-													Summarize transcripts
-												</PromptInputActionMenuItem>
-											</PromptInputActionMenuContent>
-										</PromptInputActionMenu>
-									</PromptInputTools>
-									<PromptInputSubmit aria-label='Send message' />
-								</PromptInputToolbar>
-							</PromptInput>
-						</div>
+
+						<ClientOnly fallback={null}>
+							<Suspense
+								fallback={
+									<div className='flex flex-1 items-center justify-center'>
+										<Loader />
+									</div>
+								}
+							>
+								<Chat problemId={problemId} />
+							</Suspense>
+						</ClientOnly>
 					</aside>
 				</div>
 			</div>
