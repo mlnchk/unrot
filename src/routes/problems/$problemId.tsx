@@ -1,6 +1,11 @@
 import { google } from '@ai-sdk/google'
 import { useChat } from '@ai-sdk/react'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+	createFileRoute,
+	Link,
+	notFound,
+	useLocation,
+} from '@tanstack/react-router'
 import {
 	convertToModelMessages,
 	DefaultChatTransport,
@@ -8,7 +13,7 @@ import {
 	validateUIMessages,
 } from 'ai'
 import { ChevronLeft, PanelRightOpen, Settings } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Markdown from 'react-markdown'
 import {
 	Conversation,
@@ -56,7 +61,6 @@ import {
 } from '@/components/ui/sidebar'
 import { buildProblemContext } from '@/lib/ai'
 import { getProblemBySlug, getSolutionBySlug, problems } from '@/lib/problems'
-import type { Problem, ProblemSolution } from '@/lib/types/problem'
 import { cn } from '@/lib/utils'
 
 type ProblemSidebarProps = {
@@ -182,6 +186,24 @@ function CollapsedSidebarRail({ onExpand }: CollapsedSidebarRailProps) {
 
 export const Route = createFileRoute('/problems/$problemId')({
 	component: ProblemDetailPage,
+
+	loader: async ({ params }) => {
+		const { problemId } = params
+		const [problem, solution] = await Promise.all([
+			getProblemBySlug(problemId),
+			getSolutionBySlug(problemId),
+		])
+
+		if (!(problem && solution)) {
+			throw notFound()
+		}
+
+		return {
+			problem,
+			solution,
+		}
+	},
+
 	server: {
 		handlers: {
 			POST: async ({ request, params }) => {
@@ -216,38 +238,16 @@ export const Route = createFileRoute('/problems/$problemId')({
 
 function ProblemDetailPage() {
 	const { problemId } = Route.useParams()
+	const { problem, solution } = Route.useLoaderData()
 	const [isSolutionOpen, setIsSolutionOpen] = useState(false)
-	const [problem, setProblem] = useState<Problem | null>(null)
-	const [solution, setSolution] = useState<ProblemSolution | null>(null)
-	const [isLoading, setIsLoading] = useState(true)
 	const [input, setInput] = useState('')
 
+	const pathname = useLocation({ select: (location) => location.pathname })
 	const { status, messages, sendMessage } = useChat({
 		transport: new DefaultChatTransport({
-			// FIXME: replace with Route.url or something
-			api: `/problems/${problemId}`,
+			api: pathname,
 		}),
 	})
-	// Load current problem and solution
-	useEffect(() => {
-		const loadProblem = async () => {
-			setIsLoading(true)
-			const slug = problemId ?? problems[0]?.slug ?? 'labyrinth-cipher'
-
-			const [loadedProblem, loadedSolution] = await Promise.all([
-				getProblemBySlug(slug),
-				getSolutionBySlug(slug),
-			])
-
-			setProblem(loadedProblem)
-			setSolution(loadedSolution)
-			setIsLoading(false)
-		}
-
-		if (problemId || problems.length > 0) {
-			loadProblem()
-		}
-	}, [problemId, problems])
 
 	const handlePromptSubmit = useCallback(
 		(message: PromptInputMessage) => {
@@ -259,36 +259,15 @@ function ProblemDetailPage() {
 
 			sendMessage({ text })
 			setInput('')
-
-			// Future AI integration point
-			// When implementing AI chat:
-			// 1. Import buildProblemContext from '@/lib/ai-context'
-			// 2. Use it to prepare the problem context:
-			//    const context = buildProblemContext(problem, solution);
-			// 3. Pass context.systemPrompt and context.problemData to AI SDK
 		},
-		[problem, solution],
+		[sendMessage],
 	)
-
-	const activeProblemId = problemId ?? problems[0]?.slug ?? 'labyrinth-cipher'
-
-	if (isLoading || !problem) {
-		return (
-			<SidebarProvider defaultOpen={false}>
-				<div className='h-screen w-full bg-muted/30 py-6'>
-					<div className='flex h-full items-center justify-center'>
-						<p className='text-muted-foreground'>Loading problem...</p>
-					</div>
-				</div>
-			</SidebarProvider>
-		)
-	}
 
 	return (
 		<SidebarProvider defaultOpen={false}>
 			<div className='h-screen w-full bg-muted/30 py-6'>
 				<div className='grid h-full w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
-					<ProblemSidebar activeProblemId={activeProblemId} />
+					<ProblemSidebar activeProblemId={problemId} />
 					<section className='flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md'>
 						<div className='flex flex-wrap items-start justify-between gap-4 border-border/60 border-b px-6 py-5'>
 							<div>
