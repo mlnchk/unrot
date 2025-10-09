@@ -55,29 +55,16 @@ import {
 	useSidebar,
 } from '@/components/ui/sidebar'
 import { buildProblemContext } from '@/lib/ai'
-import {
-	getAllProblems,
-	getProblemBySlug,
-	getSolutionBySlug,
-} from '@/lib/problems'
-import type {
-	Problem,
-	ProblemListItem,
-	ProblemSolution,
-} from '@/lib/types/problem'
+import { getProblemBySlug, getSolutionBySlug, problems } from '@/lib/problems'
+import type { Problem, ProblemSolution } from '@/lib/types/problem'
 import { cn } from '@/lib/utils'
 
 type ProblemSidebarProps = {
 	activeProblemId: string
-	problems: ProblemListItem[]
 	className?: string
 }
 
-function ProblemSidebar({
-	activeProblemId,
-	problems,
-	className,
-}: ProblemSidebarProps) {
+function ProblemSidebar({ activeProblemId, className }: ProblemSidebarProps) {
 	const { open, toggleOpen } = useSidebar()
 
 	const hasMatch = problems.some((problem) => problem.slug === activeProblemId)
@@ -230,7 +217,6 @@ export const Route = createFileRoute('/problems/$problemId')({
 function ProblemDetailPage() {
 	const { problemId } = Route.useParams()
 	const [isSolutionOpen, setIsSolutionOpen] = useState(false)
-	const [problems, setProblems] = useState<ProblemListItem[]>([])
 	const [problem, setProblem] = useState<Problem | null>(null)
 	const [solution, setSolution] = useState<ProblemSolution | null>(null)
 	const [isLoading, setIsLoading] = useState(true)
@@ -242,14 +228,6 @@ function ProblemDetailPage() {
 			api: `/problems/${problemId}`,
 		}),
 	})
-
-	// Load all problems for navigation
-	useEffect(() => {
-		getAllProblems().then((loadedProblems) => {
-			setProblems(loadedProblems)
-		})
-	}, [])
-
 	// Load current problem and solution
 	useEffect(() => {
 		const loadProblem = async () => {
@@ -310,10 +288,7 @@ function ProblemDetailPage() {
 		<SidebarProvider defaultOpen={false}>
 			<div className='h-screen w-full bg-muted/30 py-6'>
 				<div className='grid h-full w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
-					<ProblemSidebar
-						activeProblemId={activeProblemId}
-						problems={problems}
-					/>
+					<ProblemSidebar activeProblemId={activeProblemId} />
 					<section className='flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md'>
 						<div className='flex flex-wrap items-start justify-between gap-4 border-border/60 border-b px-6 py-5'>
 							<div>

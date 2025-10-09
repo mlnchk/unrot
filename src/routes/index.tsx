@@ -1,26 +1,14 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, Brain, Sparkles } from 'lucide-react'
-import { useEffect, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { getAllProblems } from '@/lib/problems'
-import type { ProblemListItem } from '@/lib/types/problem'
+import { problems } from '@/lib/problems'
 
 export const Route = createFileRoute('/')({
 	component: App,
 })
 
 function App() {
-	const [problems, setProblems] = useState<ProblemListItem[]>([])
-	const [isLoading, setIsLoading] = useState(true)
-
-	useEffect(() => {
-		getAllProblems().then((loadedProblems) => {
-			setProblems(loadedProblems)
-			setIsLoading(false)
-		})
-	}, [])
-
 	return (
 		<div className='min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900'>
 			<section className='relative overflow-hidden px-6 py-20 text-center'>
@@ -51,40 +39,34 @@ function App() {
 					Available Puzzles
 				</h2>
 
-				{isLoading ? (
-					<div className='flex items-center justify-center py-12'>
-						<p className='text-gray-400'>Loading puzzles...</p>
-					</div>
-				) : (
-					<div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-						{problems.map((problem) => (
-							<Link
-								className='group relative overflow-hidden rounded-lg border border-slate-700 bg-slate-800/50 p-6 shadow-lg transition-all hover:border-cyan-500/50 hover:shadow-cyan-500/20'
-								key={problem.slug}
-								params={{ problemId: problem.slug }}
-								to='/problems/$problemId'
-							>
-								<div className='mb-4 flex items-start justify-between'>
-									<h3 className='font-semibold text-white text-xl group-hover:text-cyan-400'>
-										{problem.title}
-									</h3>
-									<ArrowRight
-										aria-hidden='true'
-										className='size-5 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-cyan-400'
-									/>
-								</div>
+				<div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
+					{problems.map((problem) => (
+						<Link
+							className='group relative overflow-hidden rounded-lg border border-slate-700 bg-slate-800/50 p-6 shadow-lg transition-all hover:border-cyan-500/50 hover:shadow-cyan-500/20'
+							key={problem.slug}
+							params={{ problemId: problem.slug }}
+							to='/problems/$problemId'
+						>
+							<div className='mb-4 flex items-start justify-between'>
+								<h3 className='font-semibold text-white text-xl group-hover:text-cyan-400'>
+									{problem.title}
+								</h3>
+								<ArrowRight
+									aria-hidden='true'
+									className='size-5 text-gray-400 transition-transform group-hover:translate-x-1 group-hover:text-cyan-400'
+								/>
+							</div>
 
-								<p className='mb-4 text-gray-400 text-sm'>{problem.category}</p>
+							<p className='mb-4 text-gray-400 text-sm'>{problem.category}</p>
 
-								<Badge className='bg-slate-700' variant='secondary'>
-									{problem.difficulty}
-								</Badge>
-							</Link>
-						))}
-					</div>
-				)}
+							<Badge className='bg-slate-700' variant='secondary'>
+								{problem.difficulty}
+							</Badge>
+						</Link>
+					))}
+				</div>
 
-				{!isLoading && problems.length === 0 && (
+				{problems.length === 0 && (
 					<div className='rounded-lg border border-slate-700 border-dashed px-6 py-12 text-center'>
 						<p className='text-gray-400'>
 							No puzzles available yet. Check back soon!

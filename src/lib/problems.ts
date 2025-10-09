@@ -18,7 +18,7 @@ function parseFrontmatter(markdown: string): {
 	const metadata: Record<string, unknown> = {}
 
 	// Parse YAML-like frontmatter
-	const lines = frontmatterStr.split('\n')
+	const lines = frontmatterStr?.split('\n') ?? []
 	for (const line of lines) {
 		const colonIndex = line.indexOf(':')
 		if (colonIndex === -1) {
@@ -58,53 +58,35 @@ function parseFrontmatter(markdown: string): {
 		metadata[key] = value
 	}
 
-	return { metadata, content: content.trim() }
+	return { metadata, content: content?.trim() ?? '' }
 }
 
 // Load all problem markdown files
-const problemFiles = import.meta.glob<string>('/src/data/problems/*.md', {
-	query: '?raw',
-	import: 'default',
-})
+// const problemFiles = import.meta.glob<string>('/src/data/problems/*.md', {
+// 	query: '?raw',
+// 	import: 'default',
+// })
 
-// Get all problems for navigation
-export async function getAllProblems(): Promise<ProblemListItem[]> {
-	const problems: ProblemListItem[] = []
-
-	for (const [path, loader] of Object.entries(problemFiles)) {
-		// Skip solution files
-		if (path.includes('.solution.md')) {
-			continue
-		}
-
-		const markdown = await loader()
-		const { metadata } = parseFrontmatter(markdown)
-
-		// Extract slug from filename
-		const filename = path.split('/').at(-1) ?? ''
-		const slug = filename.replace('.md', '')
-
-		problems.push({
-			slug,
-			title: (metadata.title as string) ?? slug,
-			category: (metadata.category as string) ?? '',
-			difficulty: (metadata.difficulty as string) ?? '',
-		})
-	}
-
-	return problems
-}
-
+export const problems = [
+	{
+		category: 'logic',
+		difficulty: 'easy',
+		slug: 'two-jugs-riddle',
+		title: 'Two Jugs Riddle',
+	},
+] satisfies ProblemListItem[]
 // Get a single problem by slug
 export async function getProblemBySlug(slug: string): Promise<Problem | null> {
-	const path = `/src/data/problems/${slug}.md`
-	const loader = problemFiles[path]
+	// const path = `/src/data/problems/${slug}.md`
+	// const loader = problemFiles[path]
 
-	if (!loader) {
-		return null
-	}
+	// if (!loader) {
+	// 	return null
+	// }
 
-	const markdown = await loader()
+	const markdown = await import(`../data/problems/${slug}.md?raw`).then(
+		(m) => m.default,
+	)
 	const { metadata, content } = parseFrontmatter(markdown)
 
 	return {
