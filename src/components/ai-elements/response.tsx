@@ -25,6 +25,7 @@ export const Response = memo(
 				'--tw-prose-italic': 'inherit',
 				'--tw-prose-underline': 'inherit',
 				'--tw-prose-strike': 'inherit',
+				'--tw-prose-hr': 'inherit',
 			}}
 			{...props}
 		>
