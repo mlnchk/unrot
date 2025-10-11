@@ -33,8 +33,6 @@ type Props = {
 export function Chat({ problemId }: Props) {
 	const [input, setInput] = useState('')
 
-	// console.log('problemId', problemId)
-
 	const { data: initialMessages, refetch: refetchChatHistory } =
 		useSuspenseQuery({
 			queryKey: ['chat', problemId],
@@ -73,8 +71,8 @@ export function Chat({ problemId }: Props) {
 	)
 
 	return (
-		<div className='flex flex-1 flex-col overflow-y-auto'>
-			<Conversation className='flex-1 bg-muted/20'>
+		<div className='flex flex-1 flex-col overflow-hidden'>
+			<Conversation>
 				<ConversationContent className='flex flex-col gap-4'>
 					{messages.map(({ id, role, parts }) => (
 						<Message from={role} key={id}>
