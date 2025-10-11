@@ -1,6 +1,7 @@
 import { useChat } from '@ai-sdk/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { DefaultChatTransport } from 'ai'
+import { TrashIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import {
 	Conversation,
@@ -15,19 +16,15 @@ import {
 } from '@/components/ai-elements/message'
 import {
 	PromptInput,
-	PromptInputActionMenu,
-	PromptInputActionMenuContent,
-	PromptInputActionMenuItem,
-	PromptInputActionMenuTrigger,
 	PromptInputBody,
+	PromptInputButton,
 	type PromptInputMessage,
 	PromptInputSubmit,
 	PromptInputTextarea,
 	PromptInputToolbar,
-	PromptInputTools,
 } from '@/components/ai-elements/prompt-input'
 import { Response as UIResponse } from '@/components/ai-elements/response'
-import { getChatHistory, saveChatHistory } from '@/lib/chat'
+import { clearChatHistory, getChatHistory, saveChatHistory } from '@/lib/chat'
 
 type Props = {
 	problemId: string
@@ -36,12 +33,13 @@ type Props = {
 export function Chat({ problemId }: Props) {
 	const [input, setInput] = useState('')
 
-	const { data: initialMessages } = useSuspenseQuery({
-		queryKey: ['chat', problemId],
-		queryFn: () => getChatHistory(problemId),
-	})
+	const { data: initialMessages, refetch: refetchChatHistory } =
+		useSuspenseQuery({
+			queryKey: ['chat', problemId],
+			queryFn: () => getChatHistory(problemId),
+		})
 
-	const { status, messages, sendMessage } = useChat({
+	const { status, messages, sendMessage, setMessages } = useChat({
 		messages: initialMessages,
 		transport: new DefaultChatTransport({
 			// FIXME: use static url
@@ -51,6 +49,12 @@ export function Chat({ problemId }: Props) {
 			saveChatHistory(problemId, newMessages)
 		},
 	})
+
+	const handleClearChatHistory = useCallback(() => {
+		clearChatHistory(problemId)
+		refetchChatHistory()
+		setMessages([])
+	}, [problemId, refetchChatHistory, setMessages])
 
 	const handlePromptSubmit = useCallback(
 		(message: PromptInputMessage) => {
@@ -110,22 +114,10 @@ export function Chat({ problemId }: Props) {
 					/>
 				</PromptInputBody>
 				<PromptInputToolbar>
-					<PromptInputTools>
-						<PromptInputActionMenu>
-							<PromptInputActionMenuTrigger aria-label='Open quick actions' />
-							<PromptInputActionMenuContent>
-								<PromptInputActionMenuItem>
-									Suggest a strategy
-								</PromptInputActionMenuItem>
-								<PromptInputActionMenuItem>
-									Spot a contradiction
-								</PromptInputActionMenuItem>
-								<PromptInputActionMenuItem>
-									Summarize transcripts
-								</PromptInputActionMenuItem>
-							</PromptInputActionMenuContent>
-						</PromptInputActionMenu>
-					</PromptInputTools>
+					<PromptInputButton onClick={handleClearChatHistory}>
+						<TrashIcon aria-label='Clear chat history' size={16} />
+					</PromptInputButton>
+
 					<PromptInputSubmit aria-label='Send message' status={status} />
 				</PromptInputToolbar>
 			</PromptInput>

@@ -4,6 +4,9 @@ import localforage from 'localforage'
 export const saveChatHistory = (problemSlug: string, messages: UIMessage[]) =>
 	localforage.setItem(`chat:${problemSlug}`, messages)
 
+export const clearChatHistory = (problemSlug: string) =>
+	saveChatHistory(problemSlug, [])
+
 export const getChatHistory = async (problemSlug: string) => {
 	if (typeof window === 'undefined') {
 		return []
