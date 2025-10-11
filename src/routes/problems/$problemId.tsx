@@ -285,7 +285,7 @@ function ProblemDetailPage() {
 									</div>
 								}
 							>
-								<Chat problemId={problemId} />
+								<Chat key={problemId} problemId={problemId} />
 							</Suspense>
 						</ClientOnly>
 					</aside>

@@ -1,5 +1,3 @@
-Learn how to solve this famous water jug riddle from Die Hard 3 with **no random trial and error action**, using only common sense reasoning.
-
 ## Water Jug Riddle from Die Hard 3: Step by Step Solution Based on Common Sense Reasoning
 
 You don't have the jugs with you. **Imagine** what happens if you fill a jug and pour the water into the other jug.

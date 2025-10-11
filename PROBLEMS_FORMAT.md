@@ -101,8 +101,6 @@ The solution file contains **only content** (no frontmatter) and should provide 
 **Example:**
 
 ```markdown
-Learn how to solve this famous water jug riddle with **no random trial and error**, using only common sense reasoning.
-
 ## Step by Step Solution
 
 ### Stage 1: Visualizing Results

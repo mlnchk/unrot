@@ -74,6 +74,12 @@ export const problems = [
 		slug: 'two-jugs-riddle',
 		title: 'Two Jugs Riddle',
 	},
+	{
+		category: 'logic',
+		difficulty: 'easy',
+		slug: 'tramcar-reunion',
+		title: 'Tramcar Reunion Riddle',
+	},
 ] satisfies ProblemListItem[]
 // Get a single problem by slug
 export async function getProblemBySlug(slug: string): Promise<Problem | null> {
