@@ -1,4 +1,3 @@
-import { google } from '@ai-sdk/google'
 import {
 	ClientOnly,
 	createFileRoute,
@@ -30,7 +29,7 @@ import {
 	SidebarProvider,
 	useSidebar,
 } from '@/components/ui/sidebar'
-import { buildProblemContext } from '@/lib/ai'
+import { buildProblemSystemPrompt, model } from '@/lib/ai'
 import { getProblemBySlug, getSolutionBySlug, problems } from '@/lib/problems'
 import { cn } from '@/lib/utils'
 
@@ -50,7 +49,7 @@ function ProblemSidebar({ activeProblemId, className }: ProblemSidebarProps) {
 	return (
 		<Sidebar
 			className={cn(
-				'hidden h-full min-h-[32rem] flex-shrink-0 self-stretch rounded-lg border border-border/60 bg-background shadow-md md:flex',
+				'hidden h-full flex-shrink-0 self-stretch rounded-lg border border-border/60 bg-background shadow-md md:flex',
 				className,
 			)}
 			collapsedWidth={64}
@@ -193,12 +192,12 @@ export const Route = createFileRoute('/problems/$problemId')({
 				const uiMessages = await validateUIMessages({ messages: body.messages })
 				const modelMessages = convertToModelMessages(uiMessages)
 
-				const context = buildProblemContext(problem, solution)
+				const systemPrompt = buildProblemSystemPrompt(problem, solution)
 
 				const result = streamText({
-					model: google('gemini-2.5-flash-lite'),
+					model,
 					messages: modelMessages,
-					system: context.systemPrompt,
+					system: systemPrompt,
 				})
 
 				return result.toUIMessageStreamResponse()
@@ -234,7 +233,7 @@ function ProblemDetailPage() {
 						<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
 							<div className='space-y-8 px-6 py-6'>
 								<div className='space-y-3'>
-									<div className='prose prose-sm text-muted-foreground leading-relaxed'>
+									<div className='prose max-w-none'>
 										<Markdown>{problem.content}</Markdown>
 									</div>
 								</div>
@@ -267,7 +266,7 @@ function ProblemDetailPage() {
 											</CollapsibleTrigger>
 										</div>
 										<CollapsibleContent className='mt-4 border border-dashed px-5 py-4 text-muted-foreground'>
-											<div className='prose prose-sm'>
+											<div className='prose max-w-none'>
 												<Markdown>{solution.content}</Markdown>
 											</div>
 										</CollapsibleContent>
@@ -277,7 +276,7 @@ function ProblemDetailPage() {
 						</div>
 					</section>
 
-					<aside className='flex min-h-[32rem] flex-col rounded-lg border border-border/60 bg-background shadow-md'>
+					<aside className='flex flex-col rounded-lg border border-border/60 bg-background shadow-md'>
 						<ClientOnly fallback={null}>
 							<Suspense
 								fallback={
