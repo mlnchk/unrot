@@ -1,32 +1,18 @@
-import {
-	ClientOnly,
-	createFileRoute,
-	Link,
-	notFound,
-} from '@tanstack/react-router'
+import { ClientOnly, createFileRoute, notFound } from '@tanstack/react-router'
 import { convertToModelMessages, streamText, validateUIMessages } from 'ai'
-import { TableOfContents } from 'lucide-react'
 import { Suspense, useState } from 'react'
 import Markdown from 'react-markdown'
-import { Loader } from '@/components/ai-elements/loader'
-import { Chat } from '@/components/chat'
-import { Badge } from '@/components/ui/badge'
+import { Chat, ChatLoader } from '@/components/chat'
+import { Header, type MobileView } from '@/components/header'
 import { Button } from '@/components/ui/button'
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from '@/components/ui/collapsible'
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { buildProblemSystemPrompt, model } from '@/lib/ai'
-import { getProblemBySlug, getSolutionBySlug, problems } from '@/lib/problems'
+import { getProblemBySlug, getSolutionBySlug } from '@/lib/problems'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/problems/$problemId')({
 	component: ProblemDetailPage,
@@ -84,52 +70,24 @@ function ProblemDetailPage() {
 	const { problemId } = Route.useParams()
 	const { problem, solution } = Route.useLoaderData()
 	const [isSolutionOpen, setIsSolutionOpen] = useState(false)
+	const [mobileView, setMobileView] = useState<MobileView>('problem')
 
 	return (
-		<div className='h-screen w-full bg-muted/30 py-6'>
-			<div className='grid h-full w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]'>
-				<section className='flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md'>
-					<div className='flex flex-wrap items-center justify-between gap-4 border-border/60 border-b px-5 py-4'>
-						<div className='flex items-center gap-2'>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button
-										aria-label='Open table of contents'
-										size='icon'
-										type='button'
-										variant='ghost'
-									>
-										<TableOfContents aria-hidden='true' className='size-4' />
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent
-									align='start'
-									className='min-w-64'
-									sideOffset={8}
-								>
-									<DropdownMenuLabel>All Problems</DropdownMenuLabel>
-									<DropdownMenuSeparator />
-									{problems.map((p) => (
-										<DropdownMenuItem asChild key={p.slug}>
-											<Link
-												params={{ problemId: p.slug }}
-												to='/problems/$problemId'
-											>
-												{p.title}
-											</Link>
-										</DropdownMenuItem>
-									))}
-								</DropdownMenuContent>
-							</DropdownMenu>
-							<h1 className='font-semibold text-3xl text-foreground'>
-								{problem.metadata.title}
-							</h1>
-						</div>
-						<div className='flex items-center gap-2 text-right'>
-							<Badge variant='secondary'>{problem.metadata.difficulty}</Badge>
-							<Badge variant='outline'>{problem.metadata.estimatedTime}</Badge>
-						</div>
-					</div>
+		<div className='h-screen w-full bg-muted/30 md:p-5'>
+			<div className='grid h-full w-full grid-cols-1 gap-4 md:auto-rows-fr md:grid-cols-2'>
+				<section
+					className={cn(
+						'flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md',
+						mobileView !== 'problem' && 'max-md:hidden',
+					)}
+					id='problem-pane'
+				>
+					<Header
+						mobileView={mobileView}
+						problem={problem}
+						setMobileView={setMobileView}
+					/>
+
 					<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
 						<div className='space-y-8 px-6 py-6'>
 							<div className='space-y-3'>
@@ -138,7 +96,7 @@ function ProblemDetailPage() {
 								</div>
 							</div>
 							<div className='bg-muted/40 px-5 py-4'>
-								<p className='font-medium text-muted-foreground text-sm uppercase'>
+								<p className='font-medium text-md text-muted-foreground uppercase'>
 									Hint
 								</p>
 								<p className='mt-2 text-foreground'>{problem.metadata.hint}</p>
@@ -153,7 +111,7 @@ function ProblemDetailPage() {
 											<p className='font-medium text-foreground'>
 												Solution walkthrough
 											</p>
-											<p className='text-muted-foreground text-sm'>
+											<p className='text-md text-muted-foreground'>
 												Reveal step-by-step reasoning
 											</p>
 										</div>
@@ -174,15 +132,22 @@ function ProblemDetailPage() {
 					</div>
 				</section>
 
-				<aside className='flex flex-col rounded-lg border border-border/60 bg-background shadow-md'>
-					<ClientOnly fallback={null}>
-						<Suspense
-							fallback={
-								<div className='flex flex-1 items-center justify-center'>
-									<Loader />
-								</div>
-							}
-						>
+				<aside
+					className={cn(
+						'flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md',
+						mobileView !== 'chat' && 'max-md:hidden',
+					)}
+					id='chat-pane'
+				>
+					<Header
+						className='md:hidden'
+						mobileView={mobileView}
+						problem={problem}
+						setMobileView={setMobileView}
+					/>
+
+					<ClientOnly fallback={<ChatLoader />}>
+						<Suspense fallback={<ChatLoader />}>
 							<Chat key={problemId} problemId={problemId} />
 						</Suspense>
 					</ClientOnly>
