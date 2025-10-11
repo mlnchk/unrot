@@ -1,16 +1,12 @@
 export type ProblemMetadata = {
 	title: string
-	category: string
 	difficulty: string
-	estimatedTime: string
-	hint: string
-	source?: string
+	source: string
 }
 
 export type ProblemListItem = {
 	slug: string
 	title: string
-	category: string
 	difficulty: string
 }
 

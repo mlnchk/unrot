@@ -92,16 +92,8 @@ function ProblemDetailPage() {
 
 					<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
 						<div className='space-y-8 px-6 py-6'>
-							<div className='space-y-3'>
-								<div className='prose max-w-none'>
-									<Markdown>{problem.content}</Markdown>
-								</div>
-							</div>
-							<div className='bg-muted/40 px-5 py-4'>
-								<p className='font-medium text-md text-muted-foreground uppercase'>
-									Hint
-								</p>
-								<p className='mt-2 text-foreground'>{problem.metadata.hint}</p>
+							<div className='prose max-w-none'>
+								<Markdown>{problem.content}</Markdown>
 							</div>
 							{solution && (
 								<Collapsible

@@ -1,9 +1,6 @@
 ---
 title: "Tramcar Reunion Riddle"
-category: "Logic Puzzle"
 difficulty: "Easy"
-estimatedTime: "6 minutes"
-hint: "Focus on the most important statement. Think exhaustively."
 source: "https://suresolv.com/brain-teaser/tramcar-reunion-riddle-systematic-problem-solving"
 ---
 
@@ -36,3 +33,5 @@ Two friends met in a tramcar after years. Their talks went like this,
 — Aha! Now I know their ages.
 
 Figure out the ages of the three kids.
+
+**Hint:** Focus on the most important statement. Think exhaustively.

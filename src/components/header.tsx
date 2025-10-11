@@ -96,7 +96,6 @@ export function Header({ problem, className }: Props) {
 				</div>
 				<div className='hidden items-center gap-2 md:flex'>
 					<Badge variant='secondary'>{problem.metadata.difficulty}</Badge>
-					<Badge variant='outline'>{problem.metadata.estimatedTime}</Badge>
 				</div>
 			</div>
 		</div>
