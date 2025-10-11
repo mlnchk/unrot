@@ -218,20 +218,16 @@ function ProblemDetailPage() {
 				<div className='grid h-full w-full grid-cols-1 gap-4 px-6 md:auto-rows-fr md:grid-cols-[auto_minmax(0,1.15fr)_minmax(0,1fr)]'>
 					<ProblemSidebar activeProblemId={problemId} />
 					<section className='flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md'>
-						<div className='flex flex-wrap items-start justify-between gap-4 border-border/60 border-b px-6 py-5'>
+						<div className='flex flex-wrap items-center justify-between gap-4 border-border/60 border-b px-6 py-5'>
 							<div>
-								<h1 className='font-semibold text-2xl text-foreground sm:text-3xl'>
+								<h1 className='font-semibold text-3xl text-foreground'>
 									{problem.metadata.title}
 								</h1>
-								<p className='mt-2 text-muted-foreground text-sm sm:text-base'>
-									A mind-bending {problem.metadata.category.toLowerCase()} to
-									warm up your neurons.
-								</p>
 							</div>
-							<div className='flex flex-col items-end gap-2 text-right'>
+							<div className='flex items-center gap-2 text-right'>
 								<Badge variant='secondary'>{problem.metadata.difficulty}</Badge>
 								<Badge variant='outline'>
-									Estimate: {problem.metadata.estimatedTime}
+									{problem.metadata.estimatedTime}
 								</Badge>
 							</div>
 						</div>
@@ -270,8 +266,10 @@ function ProblemDetailPage() {
 												</Button>
 											</CollapsibleTrigger>
 										</div>
-										<CollapsibleContent className='prose prose-sm mt-4 border border-dashed px-5 py-4 text-muted-foreground'>
-											<Markdown>{solution.content}</Markdown>
+										<CollapsibleContent className='mt-4 border border-dashed px-5 py-4 text-muted-foreground'>
+											<div className='prose prose-sm'>
+												<Markdown>{solution.content}</Markdown>
+											</div>
 										</CollapsibleContent>
 									</Collapsible>
 								)}
@@ -280,16 +278,6 @@ function ProblemDetailPage() {
 					</section>
 
 					<aside className='flex min-h-[32rem] flex-col rounded-lg border border-border/60 bg-background shadow-md'>
-						<header className='border-border/60 border-b px-6 py-5'>
-							<h2 className='font-semibold text-foreground text-xl'>
-								AI workspace
-							</h2>
-							<p className='mt-1 text-muted-foreground text-sm'>
-								Draft hypotheses, ask clarifying questions, and iterate with
-								your copilot.
-							</p>
-						</header>
-
 						<ClientOnly fallback={null}>
 							<Suspense
 								fallback={

@@ -72,10 +72,6 @@ export function Chat({ problemId }: Props) {
 				<ConversationContent className='flex flex-col gap-4'>
 					{messages.map(({ id, role, parts }) => (
 						<Message from={role} key={id}>
-							<MessageAvatar
-								name={role === 'user' ? 'You' : 'AI'}
-								src='https://avatar.vercel.sh/placeholder'
-							/>
 							<MessageContent>
 								{parts.map((part, i) => {
 									switch (part.type) {
@@ -93,12 +89,18 @@ export function Chat({ problemId }: Props) {
 									}
 								})}
 							</MessageContent>
+
+							<MessageAvatar
+								name={role === 'user' ? 'You' : 'AI'}
+								src='https://avatar.vercel.sh/placeholder'
+							/>
 						</Message>
 					))}
 					{status === 'submitted' && <Loader />}
 				</ConversationContent>
 				<ConversationScrollButton aria-label='Scroll to latest message' />
 			</Conversation>
+
 			<PromptInput onSubmit={handlePromptSubmit}>
 				<PromptInputBody>
 					<PromptInputTextarea
@@ -124,7 +126,7 @@ export function Chat({ problemId }: Props) {
 							</PromptInputActionMenuContent>
 						</PromptInputActionMenu>
 					</PromptInputTools>
-					<PromptInputSubmit aria-label='Send message' />
+					<PromptInputSubmit aria-label='Send message' status={status} />
 				</PromptInputToolbar>
 			</PromptInput>
 		</div>
