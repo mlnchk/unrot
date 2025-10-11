@@ -10,25 +10,22 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useSelectedPane } from '@/hooks/use-selected-pane'
 import { problems } from '@/lib/problems'
 import type { Problem } from '@/lib/types/problem'
 import { cn } from '@/lib/utils'
 
-export type MobileView = 'problem' | 'chat'
-
 type Props = {
 	problem: Problem
-	mobileView: MobileView
-	setMobileView: (mobileView: MobileView) => void
 	className?: string
 }
 
-export function Header({
-	problem,
-	mobileView,
-	setMobileView,
-	className,
-}: Props) {
+export function Header({ problem, className }: Props) {
+	const { pane, setPane } = useSelectedPane()
+
+	const isProblemSelected = pane === 'problem'
+	const isChatSelected = pane === 'chat'
+
 	return (
 		<div
 			className={cn(
@@ -64,10 +61,12 @@ export function Header({
 						))}
 					</DropdownMenuContent>
 				</DropdownMenu>
-				<h1 className='font-semibold text-3xl text-foreground'>
+
+				<h1 className='truncate font-semibold text-foreground text-xl md:text-3xl'>
 					{problem.metadata.title}
 				</h1>
 			</div>
+
 			<div className='flex items-center gap-2'>
 				<div
 					aria-label='Select view'
@@ -76,21 +75,21 @@ export function Header({
 				>
 					<Button
 						aria-controls='problem-pane'
-						aria-pressed={mobileView === 'problem'}
-						onClick={() => setMobileView('problem')}
+						aria-pressed={isProblemSelected}
+						onClick={() => setPane('problem')}
 						size='sm'
 						type='button'
-						variant={mobileView === 'problem' ? 'secondary' : 'ghost'}
+						variant={isProblemSelected ? 'secondary' : 'ghost'}
 					>
 						Problem
 					</Button>
 					<Button
 						aria-controls='chat-pane'
-						aria-pressed={mobileView === 'chat'}
-						onClick={() => setMobileView('chat')}
+						aria-pressed={isChatSelected}
+						onClick={() => setPane('chat')}
 						size='sm'
 						type='button'
-						variant={mobileView === 'chat' ? 'secondary' : 'ghost'}
+						variant={isChatSelected ? 'secondary' : 'ghost'}
 					>
 						Chat
 					</Button>

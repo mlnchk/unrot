@@ -2,20 +2,26 @@ import { ClientOnly, createFileRoute, notFound } from '@tanstack/react-router'
 import { convertToModelMessages, streamText, validateUIMessages } from 'ai'
 import { Suspense, useState } from 'react'
 import Markdown from 'react-markdown'
+import { z } from 'zod'
 import { Chat, ChatLoader } from '@/components/chat'
-import { Header, type MobileView } from '@/components/header'
+import { Header } from '@/components/header'
 import { Button } from '@/components/ui/button'
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from '@/components/ui/collapsible'
+import { selectedPaneSchema, useSelectedPane } from '@/hooks/use-selected-pane'
 import { buildProblemSystemPrompt, model } from '@/lib/ai'
 import { getProblemBySlug, getSolutionBySlug } from '@/lib/problems'
 import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/problems/$problemId')({
 	component: ProblemDetailPage,
+
+	validateSearch: z.object({
+		pane: selectedPaneSchema,
+	}),
 
 	loader: async ({ params }) => {
 		const { problemId } = params
@@ -70,7 +76,7 @@ function ProblemDetailPage() {
 	const { problemId } = Route.useParams()
 	const { problem, solution } = Route.useLoaderData()
 	const [isSolutionOpen, setIsSolutionOpen] = useState(false)
-	const [mobileView, setMobileView] = useState<MobileView>('problem')
+	const { pane } = useSelectedPane()
 
 	return (
 		<div className='h-screen w-full bg-muted/30 md:p-5'>
@@ -78,15 +84,11 @@ function ProblemDetailPage() {
 				<section
 					className={cn(
 						'flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md',
-						mobileView !== 'problem' && 'max-md:hidden',
+						pane !== 'problem' && 'max-md:hidden',
 					)}
 					id='problem-pane'
 				>
-					<Header
-						mobileView={mobileView}
-						problem={problem}
-						setMobileView={setMobileView}
-					/>
+					<Header problem={problem} />
 
 					<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
 						<div className='space-y-8 px-6 py-6'>
@@ -135,16 +137,11 @@ function ProblemDetailPage() {
 				<aside
 					className={cn(
 						'flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md',
-						mobileView !== 'chat' && 'max-md:hidden',
+						pane !== 'chat' && 'max-md:hidden',
 					)}
 					id='chat-pane'
 				>
-					<Header
-						className='md:hidden'
-						mobileView={mobileView}
-						problem={problem}
-						setMobileView={setMobileView}
-					/>
+					<Header className='md:hidden' problem={problem} />
 
 					<ClientOnly fallback={<ChatLoader />}>
 						<Suspense fallback={<ChatLoader />}>
