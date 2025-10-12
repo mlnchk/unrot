@@ -12,7 +12,12 @@ import {
 	CollapsibleTrigger,
 } from '@/components/ui/collapsible'
 import { selectedPaneSchema, useSelectedPane } from '@/hooks/use-selected-pane'
-import { buildProblemSystemPrompt, model } from '@/lib/ai'
+import {
+	buildProblemSystemPrompt,
+	MARK_PROBLEM_COMPLETED_TOOL_NAME,
+	markProblemCompletedTool,
+	model,
+} from '@/lib/ai'
 import { getProblemBySlug, getSolutionBySlug } from '@/lib/problems'
 import { cn } from '@/lib/utils'
 
@@ -78,6 +83,9 @@ export const Route = createFileRoute('/problems/$problemId')({
 					model,
 					messages: modelMessages,
 					system: systemPrompt,
+					tools: {
+						[MARK_PROBLEM_COMPLETED_TOOL_NAME]: markProblemCompletedTool,
+					},
 				})
 
 				return result.toUIMessageStreamResponse()

@@ -24,7 +24,9 @@ import {
 	PromptInputToolbar,
 } from '@/components/ai-elements/prompt-input'
 import { Response as UIResponse } from '@/components/ai-elements/response'
+import { MARK_PROBLEM_COMPLETED_TOOL_NAME } from '@/lib/ai'
 import { clearChatHistory, getChatHistory, saveChatHistory } from '@/lib/chat'
+import { useMarkProblemCompletedMutation } from '@/lib/problem-completion'
 
 type Props = {
 	problemId: string
@@ -32,6 +34,12 @@ type Props = {
 
 export function Chat({ problemId }: Props) {
 	const [input, setInput] = useState('')
+	const markProblemCompletedMutation = useMarkProblemCompletedMutation()
+
+	const handleMarkProblemCompleted = useCallback(
+		async () => markProblemCompletedMutation.mutateAsync(problemId),
+		[markProblemCompletedMutation, problemId],
+	)
 
 	const { data: initialMessages, refetch: refetchChatHistory } =
 		useSuspenseQuery({
@@ -45,6 +53,16 @@ export function Chat({ problemId }: Props) {
 			// FIXME: use static url
 			api: `/problems/${problemId}`,
 		}),
+		onToolCall: ({ toolCall }) => {
+			switch (toolCall.toolName) {
+				case MARK_PROBLEM_COMPLETED_TOOL_NAME:
+					handleMarkProblemCompleted()
+
+					return
+				default:
+					return
+			}
+		},
 		onFinish: ({ messages: newMessages }) => {
 			saveChatHistory(problemId, newMessages)
 		},
@@ -86,6 +104,15 @@ export function Chat({ problemId }: Props) {
 													key={`${role}-${i}`}
 												>
 													{part.text}
+												</UIResponse>
+											)
+										case `tool-${MARK_PROBLEM_COMPLETED_TOOL_NAME}`:
+											return (
+												<UIResponse
+													// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+													key={`${role}-${i}`}
+												>
+													🎉 You did it! Problem marked as completed.
 												</UIResponse>
 											)
 										default:

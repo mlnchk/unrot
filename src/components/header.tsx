@@ -11,6 +11,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useSelectedPane } from '@/hooks/use-selected-pane'
+import { useCompletedProblemsQuery } from '@/lib/problem-completion'
 import { problems } from '@/lib/problems'
 import type { Problem } from '@/lib/types/problem'
 import { cn } from '@/lib/utils'
@@ -22,9 +23,12 @@ type Props = {
 
 export function Header({ problem, className }: Props) {
 	const { pane, setPane } = useSelectedPane()
-
 	const isProblemSelected = pane === 'problem'
 	const isChatSelected = pane === 'chat'
+
+	const { data: completedProblems } = useCompletedProblemsQuery()
+
+	const isCurrentProblemCompleted = completedProblems.includes(problem.slug)
 
 	return (
 		<div
@@ -36,7 +40,13 @@ export function Header({ problem, className }: Props) {
 			<div className='flex min-w-0 flex-1 items-center gap-2'>
 				<DropdownMenu>
 					<DropdownMenuTrigger className='flex w-full items-center justify-between gap-2 border-r p-4'>
-						<h1 className='truncate font-semibold text-foreground text-xl md:text-3xl'>
+						<h1
+							className={cn(
+								'truncate font-semibold text-foreground text-xl md:text-3xl',
+								isCurrentProblemCompleted &&
+									'text-muted-foreground line-through',
+							)}
+						>
 							{problem.metadata.title}
 						</h1>
 						<ChevronDownIcon aria-hidden='true' className='size-8' />
@@ -52,13 +62,29 @@ export function Header({ problem, className }: Props) {
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 
-						{problems.map((p) => (
-							<DropdownMenuItem asChild className='text-lg' key={p.slug}>
-								<Link params={{ problemId: p.slug }} to='/problems/$problemId'>
-									{p.title}
-								</Link>
-							</DropdownMenuItem>
-						))}
+						{problems.map((p) => {
+							const isCompleted = completedProblems.includes(p.slug)
+
+							return (
+								<DropdownMenuItem
+									asChild
+									className={cn(
+										'text-lg',
+										isCompleted &&
+											'text-muted-foreground line-through hover:bg-muted hover:text-muted-foreground focus:bg-muted focus:text-muted-foreground',
+									)}
+									key={p.slug}
+								>
+									<Link
+										className='flex w-full items-center justify-between gap-2'
+										params={{ problemId: p.slug }}
+										to='/problems/$problemId'
+									>
+										<span>{p.title}</span>
+									</Link>
+								</DropdownMenuItem>
+							)
+						})}
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>

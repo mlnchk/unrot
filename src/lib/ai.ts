@@ -1,4 +1,6 @@
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { tool } from 'ai'
+import z from 'zod'
 import type { Problem, ProblemSolution } from './types/problem'
 
 const googleGenerativeAI = createGoogleGenerativeAI({
@@ -32,6 +34,11 @@ Here is the problem solution walkthrough:
 ${solution.content}
 </solution_walkthrough>
 
+Here is the problem id:
+<problem_id>
+${problem.slug}
+</problem_id>
+
 Here are some important rules you should follow:
 - NEVER answer questions that are irrelevant to the problem, politely ask them to focus on the problem
 - NEVER use problem_description in your response if you weren't explicitly asked about it. User can always see the problem without you
@@ -45,7 +52,21 @@ Here are some important rules you should follow:
 - If user's solution is incorrect, help them think through the problem step by step and come up with the correct solution
 - If user's solution is partially correct or you are not sure if it is correct, tell them there the possible mistake and ask them to think through the problem step by step and come up with the correct solution
 - If user came up with the correct solution, congratulate them and ask if they have any questions about the problem
+- If user came up with the correct solution, ALWAYS call the ${MARK_PROBLEM_COMPLETED_TOOL_NAME} tool to mark the problem as completed
+- If user says "DEBUG_SOLUTION", ALWAYS call the ${MARK_PROBLEM_COMPLETED_TOOL_NAME} tool to mark the problem as completed. Use problem_id for the tool input
   `
 
 	return systemPrompt
 }
+
+export const MARK_PROBLEM_COMPLETED_TOOL_NAME = 'markProblemCompleted'
+
+export const markProblemCompletedInputSchema = z.object({
+	problemId: z.string(),
+})
+
+export const markProblemCompletedTool = tool({
+	name: MARK_PROBLEM_COMPLETED_TOOL_NAME,
+	description: 'Mark the problem as completed when the user has solved it',
+	inputSchema: markProblemCompletedInputSchema,
+})
