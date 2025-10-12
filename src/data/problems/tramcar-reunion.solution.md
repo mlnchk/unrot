@@ -39,7 +39,15 @@ These are all combinations with **1 as the first factor.**
 
 These are the feasible combinations **with 1, 2 and 3 as the first factor:**
 
-![Image 2: Table of feasible combination of ages of the children](https://suresolv.com/sites/default/files/u2/tables-of-feasible-combinations-of-ages-of-children.png)
+| Ages (years) | Sum | Notes              |
+| ------------ | --- | ------------------ |
+| 1, 2, 18     | 21  |                    |
+| 1, 3, 12     | 16  |                    |
+| 1, 4, 9      | 14  |                    |
+| 1, 6, 6      | 13  | Same sum pair (13) |
+| 2, 2, 9      | 13  | Same sum pair (13) |
+| 2, 3, 6      | 11  |                    |
+| 3, 3, 4      | 10  |                    |
 
 #### Step 4. Identify the reason behind the lingering doubt in the first friend's mind:
 

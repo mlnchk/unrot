@@ -122,7 +122,16 @@ _Solution reached in 8 moves._
 
 Steps of actions and results shown in table below.
 
-![First solution to two water jug riddle from Die hard 3](https://suresolv.com/sites/default/files/u2/First-solution-two-water-jug-riddle-from-die-hard-3.png)
+| Step | Action                          | 5L jug (L) | 3L jug (L) | Notes                       |
+| ---- | ------------------------------- | ---------- | ---------- | --------------------------- |
+| 1    | Fill the 3L jug                 | 0          | 3          |                             |
+| 2    | Pour 3L into the 5L jug         | 3          | 0          |                             |
+| 3    | Fill the 3L jug                 | 3          | 3          |                             |
+| 4    | Pour from 3L into 5L until full | 5          | 1          | 2L poured; 1L remains in 3L |
+| 5    | Empty the 5L jug                | 0          | 1          |                             |
+| 6    | Pour 1L from 3L into 5L         | 1          | 0          | Intermediate target reached |
+| 7    | Fill the 3L jug                 | 1          | 3          |                             |
+| 8    | Pour 3L into the 5L jug         | 4          | 0          | Goal reached (4L in 5L)     |
 
 **Key Techniques Used:**
 
@@ -166,8 +175,14 @@ The fill and pour **actions to reach the intermediate target first** and then re
 6. Fill the 3-liter jug, pouring 1 liter from the filled up 5-liter jug. 4 liter of water remains in the 5-liter jug.
 
 Steps of actions and results shown in table below.
-
-![Second solution to two water jug riddle from Die Hard 3](https://suresolv.com/sites/default/files/u2/Second-solution-two-water-jug-riddle-from-die-hard-3.png)
+| Step | Action | 5L jug (L) | 3L jug (L) | Notes |
+| ---- | ------------------------------- | ---------- | ---------- | --------------------------- |
+| 1 | Fill the 5L jug | 5 | 0 | |
+| 2 | Fill 3L from the 5L jug | 2 | 3 | 2L remains in 5L |
+| 3 | Empty the 3L jug | 2 | 0 | |
+| 4 | Pour 2L from 5L into 3L | 0 | 2 | 3L has 1L empty |
+| 5 | Fill the 5L jug | 5 | 2 | |
+| 6 | Pour 1L from 5L into 3L (fill) | 4 | 3 | Goal reached (4L in 5L) |
 
 **Solutions to the puzzle are only two.** _The second solution reached in two steps less than the first. In terms of fill and pour actions, this is the more efficient and hence the better solution._
 
