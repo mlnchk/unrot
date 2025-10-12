@@ -1,6 +1,6 @@
 import { useChat } from '@ai-sdk/react'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { DefaultChatTransport } from 'ai'
+import { type ChatStatus, DefaultChatTransport, type UIMessage } from 'ai'
 import { TrashIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import {
@@ -90,47 +90,7 @@ export function Chat({ problemId }: Props) {
 
 	return (
 		<div className='flex flex-1 flex-col overflow-hidden'>
-			<Conversation>
-				<ConversationContent>
-					{messages.map(({ id, role, parts }) => (
-						<Message from={role} key={id}>
-							<MessageContent>
-								{parts.map((part, i) => {
-									switch (part.type) {
-										case 'text':
-											return (
-												<UIResponse
-													// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-													key={`${role}-${i}`}
-												>
-													{part.text}
-												</UIResponse>
-											)
-										case `tool-${MARK_PROBLEM_COMPLETED_TOOL_NAME}`:
-											return (
-												<UIResponse
-													// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-													key={`${role}-${i}`}
-												>
-													🎉 You did it! Problem marked as completed.
-												</UIResponse>
-											)
-										default:
-											return null
-									}
-								})}
-							</MessageContent>
-
-							<MessageAvatar
-								name={role === 'user' ? 'You' : 'AI'}
-								src='https://avatar.vercel.sh/placeholder'
-							/>
-						</Message>
-					))}
-					{status === 'submitted' && <Loader />}
-				</ConversationContent>
-				<ConversationScrollButton aria-label='Scroll to latest message' />
-			</Conversation>
+			<ChatContent messages={messages} status={status} />
 
 			<PromptInput onSubmit={handlePromptSubmit}>
 				<PromptInputBody>
@@ -154,6 +114,58 @@ export function Chat({ problemId }: Props) {
 				</PromptInputToolbar>
 			</PromptInput>
 		</div>
+	)
+}
+
+export function ChatContent({
+	messages,
+	status,
+}: {
+	messages: UIMessage[]
+	status: ChatStatus
+}) {
+	return (
+		<Conversation>
+			<ConversationContent>
+				{messages.map(({ id, role, parts }) => (
+					<Message from={role} key={id}>
+						<MessageContent>
+							{parts.map((part, i) => {
+								switch (part.type) {
+									case 'text':
+										return (
+											<UIResponse
+												// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+												key={`${role}-${i}`}
+											>
+												{part.text}
+											</UIResponse>
+										)
+									case `tool-${MARK_PROBLEM_COMPLETED_TOOL_NAME}`:
+										return (
+											<UIResponse
+												// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
+												key={`${role}-${i}`}
+											>
+												🎉 You did it! Problem marked as completed
+											</UIResponse>
+										)
+									default:
+										return null
+								}
+							})}
+						</MessageContent>
+
+						<MessageAvatar
+							name={role === 'user' ? 'You' : 'AI'}
+							src='https://avatar.vercel.sh/placeholder'
+						/>
+					</Message>
+				))}
+				{status === 'submitted' && <Loader />}
+			</ConversationContent>
+			<ConversationScrollButton aria-label='Scroll to latest message' />
+		</Conversation>
 	)
 }
 

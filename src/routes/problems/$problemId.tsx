@@ -105,14 +105,14 @@ function ProblemDetailPage() {
 			<div className='grid h-full w-full grid-cols-1 gap-8 md:auto-rows-fr md:grid-cols-[5fr_4fr]'>
 				<section
 					className={cn(
-						'flex h-full flex-col overflow-hidden rounded-lg border border-border bg-background',
+						'flex h-full flex-col overflow-hidden border border-border bg-background',
 						pane !== 'problem' && 'max-md:hidden',
 					)}
 					id='problem-pane'
 				>
 					<Header problem={problem} />
 
-					<div className='flex-1 overflow-y-auto rounded-b-lg'>
+					<div className='flex-1 overflow-y-auto'>
 						<div className='space-y-6 p-4'>
 							<img
 								alt={problem.metadata.title}
@@ -157,7 +157,7 @@ function ProblemDetailPage() {
 
 				<aside
 					className={cn(
-						'flex h-full flex-col overflow-hidden rounded-lg border border-border bg-muted md:bg-card',
+						'flex h-full flex-col overflow-hidden border border-border bg-muted md:bg-card',
 						pane !== 'chat' && 'max-md:hidden',
 					)}
 					id='chat-pane'

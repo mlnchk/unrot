@@ -85,6 +85,14 @@ export function Header({ problem, className }: Props) {
 								</DropdownMenuItem>
 							)
 						})}
+
+						<DropdownMenuSeparator />
+
+						<DropdownMenuItem asChild className='text-lg'>
+							<Link to='/'>
+								<span>What is it?</span>
+							</Link>
+						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
