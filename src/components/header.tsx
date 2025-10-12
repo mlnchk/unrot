@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { TableOfContents } from 'lucide-react'
+import { ChevronDownIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,34 +29,31 @@ export function Header({ problem, className }: Props) {
 	return (
 		<div
 			className={cn(
-				'flex flex-wrap items-center gap-4 border-border border-b bg-background p-4',
+				'flex select-none flex-wrap items-center border-border border-b bg-background',
 				className,
 			)}
 		>
 			<div className='flex min-w-0 flex-1 items-center gap-2'>
 				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button
-							aria-label='Open table of contents'
-							size='icon'
-							type='button'
-							variant='ghost'
-						>
-							<TableOfContents aria-hidden='true' className='size-4' />
-						</Button>
+					<DropdownMenuTrigger className='flex w-full items-center justify-between gap-2 border-r p-4'>
+						<h1 className='truncate font-semibold text-foreground text-xl md:text-3xl'>
+							{problem.metadata.title}
+						</h1>
+						<ChevronDownIcon aria-hidden='true' className='size-8' />
 					</DropdownMenuTrigger>
+
 					<DropdownMenuContent
 						align='start'
-						className='min-w-64'
-						sideOffset={8}
+						className='w-full min-w-64'
+						sideOffset={0}
 					>
-						<DropdownMenuLabel className='-m-1 bg-muted'>
+						<DropdownMenuLabel className='-m-1 bg-muted text-lg'>
 							All Problems
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 
 						{problems.map((p) => (
-							<DropdownMenuItem asChild key={p.slug}>
+							<DropdownMenuItem asChild className='text-lg' key={p.slug}>
 								<Link params={{ problemId: p.slug }} to='/problems/$problemId'>
 									{p.title}
 								</Link>
@@ -64,13 +61,9 @@ export function Header({ problem, className }: Props) {
 						))}
 					</DropdownMenuContent>
 				</DropdownMenu>
-
-				<h1 className='truncate font-semibold text-foreground text-xl md:text-3xl'>
-					{problem.metadata.title}
-				</h1>
 			</div>
 
-			<div className='flex items-center gap-2'>
+			<div className='flex items-center gap-2 p-4'>
 				<div
 					aria-label='Select view'
 					className='flex items-center gap-1 md:hidden'

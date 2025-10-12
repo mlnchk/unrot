@@ -18,6 +18,7 @@ export const Response = memo(
 				// @ts-expect-error
 				'--tw-prose-body': 'inherit',
 				'--tw-prose-counters': 'inherit',
+				'--tw-prose-bullets': 'inherit',
 				'--tw-prose-headings': 'inherit',
 				'--tw-prose-lead': 'inherit',
 				'--tw-prose-links': 'inherit',

@@ -1,5 +1,9 @@
 import { stderr as errorOutput, stdout as output } from 'node:process'
-import { collectExistingSlugs, ensureUniqueSlug, writeProblemFiles } from './file-writer'
+import {
+	collectExistingSlugs,
+	ensureUniqueSlug,
+	writeProblemFiles,
+} from './file-writer'
 import { fetchHtml, parseProblem } from './parser'
 
 type GeneratedProblem = {
@@ -68,13 +72,13 @@ async function main(): Promise<void> {
 	for (const url of urls) {
 		const problem = await generateProblem(url, usedSlugs)
 		await writeProblemFiles(problem)
-		writeLine(
-			`Created markdown files for ${problem.title} (${problem.slug})`,
-		)
+		writeLine(`Created markdown files for ${problem.title} (${problem.slug})`)
 	}
 
 	writeLine('\nNext steps:')
-	writeLine('- Fill in the frontmatter fields (title, category, difficulty, estimatedTime, hint, source).')
+	writeLine(
+		'- Fill in the frontmatter fields (title, category, difficulty, estimatedTime, hint, source).',
+	)
 	writeLine('- Review the generated markdown files under src/data/problems/.')
 	writeLine('- Replace the solution placeholder with the actual walkthrough.')
 	writeLine('- Add each new problem entry to src/lib/problems.ts manually.')
