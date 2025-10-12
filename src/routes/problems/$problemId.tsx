@@ -42,6 +42,18 @@ export const Route = createFileRoute('/problems/$problemId')({
 		}
 	},
 
+	head: ({ loaderData }) => {
+		if (!loaderData) {
+			return {}
+		}
+
+		const title = loaderData.problem.metadata.title
+
+		return {
+			meta: [{ title }],
+		}
+	},
+
 	server: {
 		handlers: {
 			POST: async ({ request, params }) => {
