@@ -39,7 +39,7 @@ export function Chat({ problemId }: Props) {
 			queryFn: () => getChatHistory(problemId),
 		})
 
-	const { status, messages, sendMessage, setMessages } = useChat({
+	const { status, messages, error, sendMessage, setMessages } = useChat({
 		messages: initialMessages,
 		transport: new DefaultChatTransport({
 			// FIXME: use static url
@@ -113,11 +113,16 @@ export function Chat({ problemId }: Props) {
 						value={input}
 					/>
 				</PromptInputBody>
-				<PromptInputToolbar>
+				<PromptInputToolbar className='gap-3'>
 					<PromptInputButton onClick={handleClearChatHistory}>
 						<TrashIcon aria-label='Clear chat history' size={16} />
 					</PromptInputButton>
 
+					{error && (
+						<div className='flex-1 truncate text-left text-red-500 text-sm'>
+							{error.message}
+						</div>
+					)}
 					<PromptInputSubmit aria-label='Send message' status={status} />
 				</PromptInputToolbar>
 			</PromptInput>

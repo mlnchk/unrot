@@ -1,7 +1,14 @@
-import { google } from '@ai-sdk/google'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import type { Problem, ProblemSolution } from './types/problem'
 
-export const model = google('gemini-2.5-flash')
+const googleGenerativeAI = createGoogleGenerativeAI({
+	apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+	/* Cloudflare AI Gateway. Docs: https://developers.cloudflare.com/ai-gateway/integrations/vercel-ai-sdk/ */
+	baseURL:
+		'https://gateway.ai.cloudflare.com/v1/80112b53de89e8cb45447c5271a73c78/unrot/google-ai-studio/v1beta',
+})
+
+export const model = googleGenerativeAI('gemini-2.5-flash')
 
 export function buildProblemSystemPrompt(
 	problem: Problem,
