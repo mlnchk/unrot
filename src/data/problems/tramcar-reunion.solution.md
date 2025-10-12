@@ -1,5 +1,3 @@
-### Step by Step Solution to the Tramcar reunion riddle: Learn to Discover Hidden Clue
-
 #### Step 1. Identifying the most important statement to take up first for analysis:
 
 Follow the fundamental rule in analyzing a collection of statements:

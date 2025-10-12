@@ -1,5 +1,3 @@
-### Solution to the 17 Minute Bridge Crossing Riddle
-
 #### Step 1. Understand the Problem
 
 - Four persons must cross a bridge at night.

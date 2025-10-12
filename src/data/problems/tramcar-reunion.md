@@ -33,4 +33,4 @@ Two friends met in a tramcar after years. Their talks went like this,
 
 Figure out the ages of the three kids.
 
-**Hint:** Focus on the most important statement. Think exhaustively.
+> **Hint:** Focus on the most important statement. Think exhaustively.

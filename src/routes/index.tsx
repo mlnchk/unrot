@@ -31,7 +31,7 @@ const INTRO_MESSAGES: UIMessage[] = INTRO.map((message, index) => ({
 function IndexPage() {
 	return (
 		<div className='mx-auto h-dvh w-full max-w-[120rem] bg-sidebar md:p-8'>
-			<main className='mx-auto flex h-full w-2xl flex-col overflow-hidden border border-border bg-muted md:bg-card'>
+			<main className='mx-auto flex h-full max-w-2xl flex-col overflow-hidden border border-border bg-muted md:bg-card'>
 				<ChatContent messages={INTRO_MESSAGES} status='ready' />
 
 				<div className='flex justify-center p-4'>

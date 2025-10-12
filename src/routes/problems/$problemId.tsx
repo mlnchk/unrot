@@ -113,14 +113,14 @@ function ProblemDetailPage() {
 					<Header problem={problem} />
 
 					<div className='flex-1 overflow-y-auto'>
-						<div className='space-y-6 p-4'>
-							<img
+						<div className='space-y-6 p-4 py-6'>
+							{/* <img
 								alt={problem.metadata.title}
 								className='h-auto w-full'
 								height={300}
 								src={problem.metadata.cover}
 								width='auto'
-							/>
+							/> */}
 							<div className='prose max-w-none'>
 								<Markdown>{problem.content}</Markdown>
 							</div>

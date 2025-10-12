@@ -13,4 +13,4 @@ The bridge being weak, at most two can walk on the bridge while crossing togethe
 
 How could they cross the bridge safely?
 
-**Hint:** Strategic thinking, identifying and overcoming bottlenecks needed.
+> **Hint:** Strategic thinking, identifying and overcoming bottlenecks needed.

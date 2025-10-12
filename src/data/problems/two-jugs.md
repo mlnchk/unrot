@@ -11,4 +11,4 @@ Measure 4 liter of water with two empty jugs of 5 liter and 3 liter capacity and
 
 How many ways can you measure 4 liters of water by repeating fill and pour moves?
 
-**Hint:** Think where to start.
+> **Hint:** Think where to start.
