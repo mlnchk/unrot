@@ -1,4 +1,3 @@
-import { DropdownMenuArrow } from '@radix-ui/react-dropdown-menu'
 import { Link } from '@tanstack/react-router'
 import { ChevronDownIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
