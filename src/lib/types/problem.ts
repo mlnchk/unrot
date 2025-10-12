@@ -2,6 +2,7 @@ export type ProblemMetadata = {
 	title: string
 	difficulty: string
 	source: string
+	cover: string
 }
 
 export type ProblemListItem = {

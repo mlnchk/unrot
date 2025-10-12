@@ -69,18 +69,18 @@ function parseFrontmatter(markdown: string): {
 
 export const problems = [
 	{
-		slug: 'two-jugs-riddle',
-		title: 'Two Jugs Riddle',
+		slug: 'two-jugs',
+		title: 'Two Jugs',
 		difficulty: 'easy',
 	},
 	{
 		slug: 'tramcar-reunion',
-		title: 'Tramcar Reunion Riddle',
+		title: 'Tramcar Reunion',
 		difficulty: 'easy',
 	},
 	{
-		slug: 'riddle-of-bridge-crossing-in-17-minutes',
-		title: 'Riddle of Bridge Crossing in 17 Minutes',
+		slug: 'bridge-crossing-in-17-minutes',
+		title: 'Bridge Crossing in 17 Minutes',
 		difficulty: 'medium',
 	},
 ] satisfies ProblemListItem[]
@@ -104,6 +104,7 @@ export async function getProblemBySlug(slug: string): Promise<Problem | null> {
 			title: (metadata.title as string) ?? '',
 			difficulty: (metadata.difficulty as string) ?? '',
 			source: (metadata.source as string) ?? '',
+			cover: (metadata.cover as string) ?? '',
 		},
 		content,
 	}

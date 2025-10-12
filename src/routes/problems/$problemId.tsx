@@ -28,7 +28,9 @@ export const Route = createFileRoute('/problems/$problemId')({
 		const [problem, solution] = await Promise.all([
 			getProblemBySlug(problemId),
 			getSolutionBySlug(problemId),
-		])
+		]).catch(() => {
+			throw notFound()
+		})
 
 		if (!(problem && solution)) {
 			throw notFound()
@@ -79,19 +81,26 @@ function ProblemDetailPage() {
 	const { pane } = useSelectedPane()
 
 	return (
-		<div className='h-screen w-full bg-muted/30 md:p-5'>
-			<div className='grid h-full w-full grid-cols-1 gap-4 md:auto-rows-fr md:grid-cols-2'>
+		<div className='mx-auto h-dvh w-full max-w-[120rem] bg-sidebar md:p-8'>
+			<div className='grid h-full w-full grid-cols-1 gap-8 md:auto-rows-fr md:grid-cols-[5fr_4fr]'>
 				<section
 					className={cn(
-						'flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md',
+						'flex h-full flex-col overflow-hidden rounded-lg border border-border bg-background',
 						pane !== 'problem' && 'max-md:hidden',
 					)}
 					id='problem-pane'
 				>
 					<Header problem={problem} />
 
-					<div className='flex-1 overflow-y-auto rounded-b-lg border-border/20 border-t'>
-						<div className='space-y-8 px-6 py-6'>
+					<div className='flex-1 overflow-y-auto rounded-b-lg'>
+						<div className='space-y-6 p-4'>
+							<img
+								alt={problem.metadata.title}
+								className='h-auto w-full'
+								height={300}
+								src={problem.metadata.cover}
+								width='auto'
+							/>
 							<div className='prose max-w-none'>
 								<Markdown>{problem.content}</Markdown>
 							</div>
@@ -100,7 +109,7 @@ function ProblemDetailPage() {
 									onOpenChange={setIsSolutionOpen}
 									open={isSolutionOpen}
 								>
-									<div className='flex items-center justify-between gap-3 border px-5 py-4'>
+									<div className='flex items-center justify-between gap-3 border p-4'>
 										<div>
 											<p className='font-medium text-foreground'>
 												Solution walkthrough
@@ -115,7 +124,7 @@ function ProblemDetailPage() {
 											</Button>
 										</CollapsibleTrigger>
 									</div>
-									<CollapsibleContent className='mt-4 border border-dashed px-5 py-4 text-muted-foreground'>
+									<CollapsibleContent className='mt-4 border border-dashed p-4 text-muted-foreground'>
 										<div className='prose max-w-none'>
 											<Markdown>{solution.content}</Markdown>
 										</div>
@@ -128,7 +137,7 @@ function ProblemDetailPage() {
 
 				<aside
 					className={cn(
-						'flex h-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background shadow-md',
+						'flex h-full flex-col overflow-hidden rounded-lg border border-border bg-muted md:bg-card',
 						pane !== 'chat' && 'max-md:hidden',
 					)}
 					id='chat-pane'

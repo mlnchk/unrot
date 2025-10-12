@@ -29,7 +29,7 @@ export function Header({ problem, className }: Props) {
 	return (
 		<div
 			className={cn(
-				'flex flex-wrap items-center gap-4 border-border/60 border-b px-5 py-4',
+				'flex flex-wrap items-center gap-4 border-border border-b bg-background p-4',
 				className,
 			)}
 		>
@@ -50,8 +50,11 @@ export function Header({ problem, className }: Props) {
 						className='min-w-64'
 						sideOffset={8}
 					>
-						<DropdownMenuLabel>All Problems</DropdownMenuLabel>
+						<DropdownMenuLabel className='-m-1 bg-muted'>
+							All Problems
+						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
+
 						{problems.map((p) => (
 							<DropdownMenuItem asChild key={p.slug}>
 								<Link params={{ problemId: p.slug }} to='/problems/$problemId'>

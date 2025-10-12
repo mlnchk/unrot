@@ -2,11 +2,10 @@
 title: "Tramcar Reunion Riddle"
 difficulty: "Easy"
 source: "https://suresolv.com/brain-teaser/tramcar-reunion-riddle-systematic-problem-solving"
+cover: "https://suresolv.com/sites/default/files/u2/the-riddle-of-the-reunion-in-a-tramcar.png"
 ---
 
-![Image 1: Tramcar Reunion Riddle: Learn to Decode and Discover Hidden Clue](https://suresolv.com/sites/default/files/u2/the-riddle-of-the-reunion-in-a-tramcar.png)
-
-## Decode the language: Discover the clue hidden in the conversation
+## Discover the clue hidden in the conversation
 
 Learn how to decode and discover the hidden clue in a conversation through step by step reasoning, applying question, answer and analysis technique.
 

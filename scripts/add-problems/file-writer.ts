@@ -90,6 +90,7 @@ function buildFrontmatter(problem: ProblemRecord): string {
 		`title: "${escapeDoubleQuotes(problem.title)}"`,
 		'difficulty: ""',
 		`source: "${escapeDoubleQuotes(problem.source)}"`,
+		`cover: ""`,
 		'---',
 		'',
 	].join('\n')
