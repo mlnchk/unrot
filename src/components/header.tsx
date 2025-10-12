@@ -1,3 +1,4 @@
+import { DropdownMenuArrow } from '@radix-ui/react-dropdown-menu'
 import { Link } from '@tanstack/react-router'
 import { ChevronDownIcon } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
@@ -76,6 +77,11 @@ export function Header({ problem, className }: Props) {
 									key={p.slug}
 								>
 									<Link
+										activeProps={{
+											className: isCompleted
+												? 'bg-muted text-muted-foreground'
+												: 'bg-accent text-accent-foreground',
+										}}
 										className='flex w-full items-center justify-between gap-2'
 										params={{ problemId: p.slug }}
 										to='/problems/$problemId'
