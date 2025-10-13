@@ -1,11 +1,9 @@
 ---
-title: "Two Burning Ropes Timer Riddle"
+title: "Two Burning Ropes"
 difficulty: "Moderate"
 source: "https://suresolv.com/brain-teaser/two-burning-ropes-timer-riddle"
 cover: ""
 ---
-
-## The burning ropes timer riddle
 
 Measure a time of 45 minutes by burning two ropes each of which takes 1 hour to burn out.
 

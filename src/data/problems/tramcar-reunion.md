@@ -1,15 +1,9 @@
 ---
-title: "Tramcar Reunion Riddle"
+title: "Tramcar Reunion"
 difficulty: "Easy"
 source: "https://suresolv.com/brain-teaser/tramcar-reunion-riddle-systematic-problem-solving"
 cover: "https://suresolv.com/sites/default/files/u2/the-riddle-of-the-reunion-in-a-tramcar.png"
 ---
-
-## Discover the clue hidden in the conversation
-
-Learn how to decode and discover the hidden clue in a conversation through step by step reasoning, applying question, answer and analysis technique.
-
-### The riddle
 
 Two friends met in a tramcar after years. Their talks went like this,
 
