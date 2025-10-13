@@ -1,5 +1,28 @@
 import type { Problem, ProblemListItem, ProblemSolution } from './types/problem'
 
+export const problems = [
+	{
+		slug: 'two-jugs',
+		title: 'Two Jugs',
+		difficulty: 'easy',
+	},
+	{
+		slug: 'tramcar-reunion',
+		title: 'Tramcar Reunion',
+		difficulty: 'easy',
+	},
+	{
+		slug: 'bridge-crossing-in-17-minutes',
+		title: 'Bridge Crossing in 17 Minutes',
+		difficulty: 'moderate',
+	},
+	{
+		slug: 'two-burning-ropes',
+		title: 'Two Burning Ropes',
+		difficulty: 'moderate',
+	},
+] satisfies ProblemListItem[]
+
 // Regex for parsing frontmatter (defined at top level for performance)
 const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
 
@@ -67,23 +90,6 @@ function parseFrontmatter(markdown: string): {
 // 	import: 'default',
 // })
 
-export const problems = [
-	{
-		slug: 'two-jugs',
-		title: 'Two Jugs',
-		difficulty: 'easy',
-	},
-	{
-		slug: 'tramcar-reunion',
-		title: 'Tramcar Reunion',
-		difficulty: 'easy',
-	},
-	{
-		slug: 'bridge-crossing-in-17-minutes',
-		title: 'Bridge Crossing in 17 Minutes',
-		difficulty: 'medium',
-	},
-] satisfies ProblemListItem[]
 // Get a single problem by slug
 export async function getProblemBySlug(slug: string): Promise<Problem | null> {
 	// const path = `/src/data/problems/${slug}.md`

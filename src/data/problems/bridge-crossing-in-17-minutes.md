@@ -1,6 +1,6 @@
 ---
 title: "Bridge Crossing in 17 Minutes"
-difficulty: "Medium"
+difficulty: "Moderate"
 source: "https://suresolv.com/brain-teaser/riddle-bridge-crossing-in-17-mins"
 cover: "https://suresolv.com/sites/default/files/u2/bridge-crossing-in-17-mins-riddle.jpg"
 ---
