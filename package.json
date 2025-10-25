@@ -9,7 +9,8 @@
     "test": "vitest run",
     "check": "ultracite check",
     "format": "ultracite fix",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "problems:add": "bun run scripts/add-problems/index.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^2.0.1",

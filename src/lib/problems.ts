@@ -21,6 +21,11 @@ export const problems = [
 		title: 'Two Burning Ropes',
 		difficulty: 'moderate',
 	},
+	{
+		slug: 'airplane-flying-around-the-world',
+		title: 'Airplane Flying Around the World',
+		difficulty: 'hard',
+	},
 ] satisfies ProblemListItem[]
 
 // Regex for parsing frontmatter (defined at top level for performance)
